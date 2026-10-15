@@ -12,11 +12,11 @@
  *
  * Bump CACHE_VERSION whenever you change the precached files below.
  */
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const SHELL = 'athana-shell-' + CACHE_VERSION;
 const RUNTIME = 'athana-runtime-' + CACHE_VERSION;
 const SCOPE = new URL('./', self.registration.scope).href;
-const PRECACHE = ['./', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon-180.png', 'icons/favicon-64.png'];
+const PRECACHE = ['./', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon-180.png', 'favicon-64.png'];
 const CDN_HOSTS = new Set(['cdn.tailwindcss.com', 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net']);
 const PAGE_TIMEOUT_MS = 4000;
 

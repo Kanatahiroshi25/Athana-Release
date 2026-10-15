@@ -97,7 +97,7 @@ Athana is a static website: no build step and nothing to install.
 | `index.html` | The whole app |
 | `manifest.webmanifest` | Makes it installable |
 | `sw.js` | Service worker for offline use |
-| `icons/` | App icons |
+| `favicon-64.png`, `apple-touch-icon-180.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | App icons |
 
 **Try it on your computer**
 

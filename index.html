@@ -12,8 +12,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -2915,7 +2915,7 @@
         })();
         // ===== App identity: lets Windows / Android media controls say "Athana" instead of the browser's name =====
         (() => {
-            // The manifest and icons are real files now (manifest.webmanifest, icons/), linked from <head>.
+            // The manifest and icons are real files now (manifest.webmanifest and the icon PNG files), linked from <head>.
             // The service worker caches the app so it opens offline; browsers only allow it on https / localhost.
             if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(e => console.warn('Offline support is off:', e.message)); });
             let deferred = null; const btn = $('app-inst-btn'), hint = $('app-inst-hint');
