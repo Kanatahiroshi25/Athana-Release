@@ -5,7 +5,7 @@
 No account, no upload, no ads. Open it, point it at your music folder, and listen.
 Your songs never leave your device, and your playlists and settings are saved in your own browser.
 
-**Live:** https://YOUR-USERNAME.github.io/YOUR-REPO/
+**Live:** https://kanatahiroshi25.github.io/Athana-Release/
 
 > Athana is still a work in progress. Ideas and bug reports are welcome in the Issues tab.
 
