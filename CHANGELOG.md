@@ -8,6 +8,7 @@ All notable changes to Athana. The same notes appear in the app's "What's new" p
 - Android Chrome layout: a background layer made the page wider than the screen, so the library cards, song list durations and bottom navigation were cut off at the right edge. The page now always fits the screen width.
 
 ### Improved
+- Search lists every song in your library before you type, then narrows down as you search.
 - Safe-area padding for notches and gesture bars, and `viewport-fit=cover`.
 - Faster taps (no 300 ms delay or highlight flash), no pull-to-refresh bounce, bigger bottom-bar buttons, and 16 px inputs so iOS does not zoom in.
 - Lighter blur on phones and animations paused while the app is in the background, to save battery.
