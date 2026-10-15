@@ -12,7 +12,7 @@
  *
  * Bump CACHE_VERSION whenever you change the precached files below.
  */
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const SHELL = 'athana-shell-' + CACHE_VERSION;
 const RUNTIME = 'athana-runtime-' + CACHE_VERSION;
 const SCOPE = new URL('./', self.registration.scope).href;

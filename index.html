@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Athana - Lossless Audio Engine</title>
     <meta name="application-name" content="Athana">
     <meta name="apple-mobile-web-app-title" content="Athana">
@@ -20,7 +20,10 @@
     
     <style>
         /* Apple Music / Native System Font Stack */
+        html { overflow: hidden; width: 100%; max-width: 100%; overscroll-behavior: none; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+        button, a, [role=button], .lib-row, .ov-cta { touch-action: manipulation; }
         body {
+            width: 100%; max-width: 100%; overscroll-behavior: none;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #000000;
             color: #ffffff;
@@ -33,6 +36,7 @@
         #ambient-bg {
             position: absolute;
             inset: -20%;
+            max-width: none;
             background-size: cover;
             background-position: center;
             filter: blur(120px) saturate(250%) brightness(0.6);
@@ -44,6 +48,18 @@
             background: linear-gradient(135deg, #1f1c2c 0%, #928DAB 100%);
         }
 
+        /* v35 mobile: safe areas, lighter effects, pause when hidden */
+        @supports (padding: max(0px)) {
+            .ov-nav { padding-bottom: env(safe-area-inset-bottom); }
+            #ov-content { padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+        }
+        @media (max-width: 767px), (pointer: coarse) {
+            #ambient-bg { filter: blur(60px) saturate(200%) brightness(0.6); }
+            #lib-overlay { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+            .ov-nav button { min-height: 44px; }
+            input, select, textarea { font-size: max(16px, 1em); }
+        }
+        html.app-hidden *, html.app-hidden *::before, html.app-hidden *::after { animation-play-state: paused !important; }
         /* Glassmorphism main layer */
         .app-container {
             background: rgba(0, 0, 0, 0.5);
@@ -2331,8 +2347,9 @@
         audio.addEventListener('loadedmetadata', () => { if (!spModal.classList.contains('hidden')) renderSignalPath(); });
 
         // ===== Changelog: "What's new" popup, shown once per version =====
-        const APP_VERSION = 34;
+        const APP_VERSION = 35;
         const CHANGELOG = [
+            { v: 35, t: 'Better on phones', i: ["Fixed the layout on Android Chrome: the library, song lists and bottom bar no longer get cut off at the right edge", "Phone tweaks: safe-area padding for notches and gesture bars, faster taps, no pull-to-refresh bounce, and lighter blur and paused animations on small screens or when the app is in the background"] },
             { v: 34, t: 'Refresh Library', i: ["Added new songs to one of your music folders? Tap Refresh library next to Shuffle all and Play all (or in the Add media panel) and they appear without reloading the page", "Your music keeps playing: new songs are added to the end of the queue, and the current song, its position and the play order are not touched"] },
             { v: 33, t: 'Multiple music folders', i: ["New Add Another Folder button in the Add media panel keeps your current library and adds a second folder, for example one on another drive", "Athana remembers every folder, so Restore brings them all back after a reload. Each remembered folder is listed with a Forget button. Select Folder still replaces the library with a single folder"] },
             { v: 32, t: 'Edit artist for a whole album', i: ["Open an album, artist or album artist in the library and tap Edit artist to change the artist name of every song in it at once", "Like the song editor, it is saved in your browser only and your files are not changed. Reset brings back the original names"] },
@@ -2911,7 +2928,7 @@
             $('upd-later').onclick = () => { dismissed = bar.dataset.sig; bar.classList.add('hidden'); };
             btn.onclick = () => check(true);
             setInterval(() => check(false), 10 * 60 * 1000);
-            document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - last > 60000) check(false); });
+            document.addEventListener('visibilitychange', () => { document.documentElement.classList.toggle('app-hidden', document.hidden); if (!document.hidden && Date.now() - last > 60000) check(false); });
         })();
         // ===== App identity: lets Windows / Android media controls say "Athana" instead of the browser's name =====
         (() => {
