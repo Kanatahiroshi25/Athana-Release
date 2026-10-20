@@ -60,6 +60,33 @@
             input, select, textarea { font-size: max(16px, 1em); }
         }
         html.app-hidden *, html.app-hidden *::before, html.app-hidden *::after { animation-play-state: paused !important; }
+        /* v35 phones: the player is one fixed screen and the queue is a bottom sheet (no scrolling down to reach it) */
+        #sheet-dim, #sheet-grip { display: none; }
+        @media (max-width: 767px) {
+            main.app-container { overflow: hidden !important; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+            #player-sec { height: 100dvh !important; padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important; }
+            #queue-sheet {
+                position: fixed !important; left: 0; right: 0; bottom: 0; z-index: 30 !important; width: 100% !important; height: 88dvh !important;
+                border-left: 0 !important; border-top: 1px solid rgba(255,255,255,.12); border-radius: 22px 22px 0 0;
+                background: rgba(14,12,20,.94) !important; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+                transform: translateY(calc(100% - 68px - env(safe-area-inset-bottom))); transition: transform .35s cubic-bezier(.2,.8,.2,1);
+                box-shadow: 0 -12px 40px -12px rgba(0,0,0,.6); will-change: transform; touch-action: pan-y;
+            }
+            #queue-sheet.open { transform: none; }
+            #sheet-grip { display: block; flex-shrink: 0; padding: 10px 0 4px; cursor: pointer; touch-action: none; }
+            #sheet-grip span { display: block; width: 40px; height: 4px; margin: 0 auto; border-radius: 4px; background: rgba(255,255,255,.35); }
+            #sheet-head { padding: 6px 16px 10px !important; }
+            #sheet-dim { display: block; position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.5); opacity: 0; pointer-events: none; transition: opacity .3s; }
+            html.sheet-open #sheet-dim { opacity: 1; pointer-events: auto; }
+        }
+        /* Performance mode: no live blur, no animated glow. Automatic in the Android app, switch in Settings. */
+        html.lite *, html.lite *::before, html.lite *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; animation: none !important; }
+        html.lite .aurora::before, html.lite .aurora::after { filter: none !important; }
+        html.lite #ambient-bg { inset: -4% !important; filter: blur(28px) saturate(160%) brightness(.6) !important; }
+        html.lite main.app-container { background: rgba(8,7,12,.72) !important; }
+        html.lite #lib-overlay { background-color: rgba(8,7,12,.97) !important; }
+        html.lite #queue-sheet { background: rgba(14,12,20,.98) !important; }
+        html.lite #ui-panel { background: rgb(24,24,28) !important; }
         /* Glassmorphism main layer */
         .app-container {
             background: rgba(0, 0, 0, 0.5);
@@ -269,6 +296,33 @@
         html.focus main > section:first-of-type { width: 100% !important; max-width: 560px; margin: 0 auto; }
         #ui-panel { transform: translateX(110%); opacity: 0; pointer-events: none; transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .25s; }
         #ui-panel.open { transform: none; opacity: 1; pointer-events: auto; }
+        /* ----- Settings hub ----- */
+        .set-top { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+        .set-top h3 { flex: 1; min-width: 0; font-size: 20px; font-weight: 800; letter-spacing: -.01em; padding-left: 6px; }
+        .set-ic { width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; background: rgba(255,255,255,.09); transition: background .15s, transform .15s; }
+        .set-ic:hover { background: rgba(255,255,255,.18); } .set-ic:active { transform: scale(.92); }
+        #set-q { width: 100%; padding: 10px 14px; border-radius: 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); outline: none; font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 14px; }
+        #set-q:focus { border-color: rgba(var(--accent),.7); }
+        .hub-row { display: flex; align-items: center; gap: 14px; width: 100%; padding: 11px 12px; margin-bottom: 8px; border-radius: 18px; text-align: left; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); transition: background .15s, transform .15s, border-color .15s; }
+        .hub-row:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.14); } .hub-row:active { transform: scale(.985); }
+        .hub-chip { position: relative; width: 42px; height: 42px; flex-shrink: 0; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--c); font-size: 17px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); }
+        .hub-chip::before { content: ''; position: absolute; inset: 0; background: var(--c); opacity: .17; }
+        .hub-chip i { position: relative; }
+        .hub-t { flex: 1; min-width: 0; } .hub-t b { display: block; font-size: 15px; font-weight: 700; }
+        .hub-t small { display: block; margin-top: 1px; font-size: 12px; font-weight: 500; line-height: 1.35; color: rgba(255,255,255,.5); }
+        .hub-go { font-size: 11px; color: rgba(255,255,255,.3); margin-right: 4px; }
+        .hub-act .hub-chip { width: 38px; height: 38px; border-radius: 12px; font-size: 15px; }
+        .set-item { margin-bottom: 24px; } #set-other .set-item { margin-bottom: 0; }
+        .set-hint { margin: 6px 12px 0; font-size: 12px; line-height: 1.4; font-weight: 500; color: rgba(255,255,255,.42); }
+        .set-view:not(.hidden), .set-page:not(.hidden) { animation: setIn .24s cubic-bezier(.2,.8,.2,1); }
+        @keyframes setIn { from { opacity: 0; transform: translateX(14px); } }
+        @media (min-width: 768px) { #ui-panel { bottom: calc(var(--navh, 0px) + 12px) !important; } }   /* the drawer stops above the tab bar */
+        @media (max-width: 767px) {
+            #ui-panel { top: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; max-width: none !important; border-radius: 0 !important; border: 0 !important; bottom: var(--navh, 0px) !important;
+                padding-top: calc(env(safe-area-inset-top) + 14px) !important; background: rgb(18,17,22) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; }
+            #ui-backdrop { display: none !important; }
+            .menu-item[data-ui] { display: none; }
+        }
         .ui-h { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 10px; }
         .ui-sw { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; box-shadow: inset 0 0 0 2px rgba(0,0,0,.28); display: flex; align-items: center; justify-content: center; font-size: 13px; transition: transform .15s, border-color .2s; }
         .ui-sw[data-c=auto] { background: conic-gradient(#ff6b9a, #ffaa3c, #3cd7aa, #46aaff, #9682ff, #ff6b9a); color: #fff; }
@@ -280,9 +334,23 @@
         .sw { display: block; position: relative; width: 40px; height: 24px; border-radius: 99px; background: rgba(255,255,255,.16); transition: background .2s; flex-shrink: 0; }
         .sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .2s; }
         .sw.on { background: rgb(var(--accent)); } .sw.on::after { transform: translateX(16px); }
+        /* ----- options from Settings ----- */
+        html.dense .playlist-item > div > div:first-child { width: 48px !important; height: 48px !important; border-radius: 12px !important; }
+        html.dense .playlist-item { padding-top: 4px !important; padding-bottom: 4px !important; }
+        html.dense .playlist-item .pl-meta, html.nolistmeta .playlist-item .pl-meta { display: none; }
+        html.nolistcov .playlist-item > div > div:first-child { display: none; }
+        html.lyr-center #lyrics-lines { text-align: center; } html.lyr-center .lyr-line { transform-origin: center; }
+        html.lyr-center .lyr-tr { border-left: 0; padding-left: 0; }
+        html.lyr-noblur #lyrics-lines.synced .lyr-line { filter: none; }
+        .set-sel { width: 100%; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); color: #fff; font-size: 14px; font-weight: 600; outline: none; color-scheme: dark; }
+        .set-sel option { background: #1c1c1e; }
+        .set-kbd { display: flex; justify-content: space-between; gap: 10px; padding: 7px 12px; font-size: 13px; color: rgba(255,255,255,.7); }
+        .set-kbd kbd { padding: 1px 8px; border-radius: 7px; background: rgba(255,255,255,.1); font: 700 12px/1.7 inherit; color: #fff; }
+        .set-dim { opacity: .4; }
+        .ui-row { text-align: left; }
         /* ===== Library ===== */
         .lib-row { display: flex; align-items: center; gap: 14px; width: 100%; padding: 9px 12px; border-radius: 16px; text-align: left; transition: background .15s, transform .15s; }
-        .lib-row:hover { background: rgba(255,255,255,.08); } .lib-row:active { transform: scale(.985); }
+        @media (hover: hover) { .lib-row:hover { background: rgba(255,255,255,.08); } } .lib-row:active { transform: scale(.985); } /* no sticky grey 'hover' row left behind by a finger */
         .lib-ic { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--c); background: color-mix(in srgb, var(--c) 30%, #141417); box-shadow: 0 6px 18px -8px var(--c); }
         .lib-th { width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0; object-fit: cover; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.08); color: rgba(255,255,255,.35); }
         .lib-n { margin-left: auto; padding-left: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.4); flex-shrink: 0; }
@@ -290,6 +358,7 @@
         #lib-overlay:not(.hidden) { animation: ovIn .35s cubic-bezier(.2,.8,.2,1); }
         @keyframes ovIn { from { opacity: 0; transform: translateY(24px); } }
         .ov-glass { background: rgba(24,21,32,.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; }
+        .ov-nav { grid-template-columns: repeat(5, minmax(0, 1fr)); }
         .ov-nav button { padding: 13px 0; color: rgba(255,255,255,.5); font-size: 18px; transition: color .2s; }
         .ov-nav button.on { color: rgb(var(--accent-l)); }
         /* ---- Library overlay: decoration ---- */
@@ -393,8 +462,8 @@
         @keyframes lyrTap { from { box-shadow: 0 0 0 0 rgba(var(--accent), .6); } to { box-shadow: 0 0 0 26px rgba(var(--accent), 0); } }
         .lyr-line::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
         .lyr-line.tap::after { animation: lyrTap .6s ease-out; }
-        .lyr-jp { font-size: clamp(22px, 3vw, 34px); font-weight: 800; letter-spacing: -.02em; line-height: 1.3; overflow-wrap: anywhere; }
-        .lyr-ro { font-size: clamp(14px, 1.7vw, 19px); font-weight: 600; line-height: 1.4; margin-top: 12px; letter-spacing: .01em; color: rgb(var(--accent-l)); opacity: .85; overflow-wrap: anywhere; }
+        .lyr-jp { font-size: calc(clamp(22px, 3vw, 34px) * var(--lyr-s, 1)); font-weight: 800; letter-spacing: -.02em; line-height: 1.3; overflow-wrap: anywhere; }
+        .lyr-ro { font-size: calc(clamp(14px, 1.7vw, 19px) * var(--lyr-s, 1)); font-weight: 600; line-height: 1.4; margin-top: 12px; letter-spacing: .01em; color: rgb(var(--accent-l)); opacity: .85; overflow-wrap: anywhere; }
         .lyr-ro:empty, #lyrics-lines.no-ro .lyr-ro { display: none; }
         .lyr-ro:not(:empty) { animation: lyrSub .6s ease backwards; }
         .lyr-gap { height: 26px; }
@@ -402,7 +471,7 @@
         #lyrics-lines.synced .lyr-line:hover { opacity: .9; filter: none; background: rgba(255,255,255,.05); }
         #lyrics-lines.synced .lyr-line.on { opacity: 1; filter: none; transform: scale(calc(1.035 + var(--beat) * .018)); background: linear-gradient(90deg, rgba(var(--accent), .18), transparent 75%); box-shadow: inset 3px 0 0 rgba(var(--accent), .95), 0 20px 44px -24px rgba(var(--accent), .9); }
         .lyr-line.on .lyr-jp { background: linear-gradient(90deg, #fff var(--p), rgba(255,255,255,.5) var(--p)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 calc(8px + var(--beat) * 20px) rgba(var(--accent), .65)); }
-        .lyr-tr { font-size: clamp(14px, 1.6vw, 18px); font-weight: 500; line-height: 1.45; margin-top: 12px; padding-left: 12px; border-left: 2px solid rgba(var(--accent), .55); color: rgba(255,255,255,.82); overflow-wrap: anywhere; }
+        .lyr-tr { font-size: calc(clamp(14px, 1.6vw, 18px) * var(--lyr-s, 1)); font-weight: 500; line-height: 1.45; margin-top: 12px; padding-left: 12px; border-left: 2px solid rgba(var(--accent), .55); color: rgba(255,255,255,.82); overflow-wrap: anywhere; }
         .lyr-tr:empty, #lyrics-lines.no-tr .lyr-tr { display: none; }
         .lyr-tr:not(:empty) { animation: lyrSub .6s ease backwards; }
         .lyr-tr.busy { opacity: .45; }
@@ -420,10 +489,11 @@
 
     <!-- Main App Container -->
     <main class="app-container relative z-10 w-full h-full flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
+        <div id="sheet-dim" class="md:hidden"></div>
         
         <!-- LEFT PANEL: Player UI -->
        <!-- LEFT PANEL: Player UI -->
-        <section class="w-full md:w-5/12 lg:w-[45%] h-[100dvh] md:h-full flex flex-col gap-3 p-3 md:p-8 shrink-0 relative">
+        <section id="player-sec" class="w-full md:w-5/12 lg:w-[45%] h-[100dvh] md:h-full flex flex-col gap-3 p-3 md:p-8 shrink-0 relative">
 
             <div class="shrink-0 relative flex items-center justify-center gap-3 text-[10px] tracking-[.4em] uppercase font-semibold text-white/55">
                 <button id="btn-library" class="pill-dark absolute left-0 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-white/80 tracking-normal" title="Library"><i class="fas fa-grip"></i></button>
@@ -500,10 +570,11 @@
         </section>
 
         <!-- RIGHT PANEL: Up Next / Library -->
-        <section class="w-full md:w-7/12 lg:w-[55%] h-[80dvh] md:h-full shrink-0 flex flex-col relative z-10 bg-black/30 border-l border-white/5">
+        <section id="queue-sheet" class="w-full md:w-7/12 lg:w-[55%] h-[80dvh] md:h-full shrink-0 flex flex-col relative z-10 bg-black/30 border-l border-white/5">
+            <div id="sheet-grip" class="md:hidden" role="button" aria-label="Show or hide the queue"><span></span></div>
             
             <!-- Tab Header & Controls -->
-            <div class="px-6 md:px-8 py-6 border-b border-white/10 shrink-0">
+            <div id="sheet-head" class="px-6 md:px-8 py-6 border-b border-white/10 shrink-0">
                 <div class="flex justify-between items-center">
                     <div class="flex gap-6 text-sm font-semibold tracking-wide">
                         <button class="tab-btn text-white border-b-2 border-white pb-1 transition-colors" data-target="tab-upnext">Up Next</button>
@@ -579,7 +650,7 @@
                             <div class="flex items-center gap-2 flex-wrap justify-end">
                                 <button id="btn-lyr-edit" class="seg-btn" title="Paste or replace the lyrics"><i class="fas fa-pen mr-1.5"></i>Edit</button>
                                 <button id="btn-romaji" class="seg-btn hidden" title="Show romaji under Japanese lines"><i class="fas fa-language mr-1.5"></i>Romaji</button>
-                                <button id="btn-trans" class="seg-btn" title="Translate the lyrics to Indonesian (sent to Google Translate, or to your AI key if you saved one in Interface)"><i class="fas fa-globe mr-1.5"></i>Indonesia</button>
+                                <button id="btn-trans" class="seg-btn" title="Translate the lyrics (sent to Google Translate, or to your AI key if you saved one in Settings)"><i class="fas fa-globe mr-1.5"></i><span id="trans-lbl">Indonesian</span></button>
                             </div>
                         </div>
                         <div id="lyrics-lines"></div>
@@ -682,11 +753,12 @@
                 </div>
                 <div class="h-[3px] bg-white/10 relative"><div id="ov-mini-bar" class="h-full" style="background:rgb(var(--accent-l));width:0;box-shadow:0 0 10px rgb(var(--accent))"></div></div>
             </div>
-            <nav class="ov-nav grid grid-cols-4 shrink-0 border-t border-white/10 bg-black/40 backdrop-blur-xl">
+            <nav class="ov-nav grid grid-cols-5 shrink-0 border-t border-white/10 bg-black/40 backdrop-blur-xl">
                 <button id="ov-nav-home" title="Library"><i class="fas fa-grip"></i><span>Library</span></button>
                 <button id="ov-nav-now" title="Now playing"><i class="fas fa-headphones"></i><span>Playing</span></button>
                 <button id="ov-nav-search" title="Search"><i class="fas fa-magnifying-glass"></i><span>Search</span></button>
                 <button id="ov-nav-queue" title="Queue"><i class="fas fa-bars"></i><span>Queue</span></button>
+                <button id="ov-nav-settings" title="Settings"><i class="fas fa-gear"></i><span>Settings</span></button>
             </nav>
         </div>
     </div>
@@ -778,7 +850,7 @@
         <button class="menu-item" data-act="edit"><i class="fas fa-pen"></i>Edit title / artist</button>
         <button class="menu-item" data-act="lab"><i class="fas fa-sliders"></i>Sound lab</button>
         <button class="menu-item" data-act="add"><i class="fas fa-plus"></i>Add media</button>
-        <button class="menu-item" data-ui="1"><i class="fas fa-sliders"></i>Interface</button>
+        <button class="menu-item" data-ui="1"><i class="fas fa-gear"></i>Settings</button>
         <button class="menu-item" data-cvr="1"><i class="fas fa-image"></i>Change cover</button>
     </div>
 
@@ -799,36 +871,167 @@
 
     <!-- Interface menu -->
     <div id="ui-backdrop" class="hidden fixed inset-0 z-[85]"></div>
-    <aside id="ui-panel" aria-hidden="true" class="fixed z-[90] top-3 right-3 bottom-3 w-[22rem] max-w-[calc(100vw-1.5rem)] p-5 rounded-3xl bg-[#1c1c1e]/85 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-y-auto text-sm font-semibold">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold tracking-tight"><i class="fas fa-sliders mr-2.5" style="color:rgb(var(--accent-l))"></i>Interface</h3>
-            <button id="ui-close" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-colors" aria-label="Close"><i class="fas fa-xmark"></i></button>
+    <aside id="ui-panel" aria-hidden="true" class="fixed z-[90] top-3 right-3 bottom-3 w-[22rem] max-w-[calc(100vw-1.5rem)] px-4 pt-4 pb-6 rounded-3xl bg-[#1c1c1e]/85 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-y-auto text-sm font-semibold">
+        <div class="set-top">
+            <button id="set-back" class="set-ic hidden" aria-label="Back"><i class="fas fa-arrow-left"></i></button>
+            <h3 id="set-title">Settings</h3>
+            <button id="set-search-btn" class="set-ic" aria-label="Search settings"><i class="fas fa-magnifying-glass"></i></button>
+            <button id="ui-close" class="set-ic" aria-label="Close"><i class="fas fa-xmark"></i></button>
         </div>
-        <p class="ui-h">Theme color</p>
-        <div id="ui-swatches" class="flex flex-wrap gap-2.5 mb-6"></div>
-        <p class="ui-h">Background</p>
-        <div class="flex gap-2 mb-4"><button class="seg-btn" data-bgm="ambient">Ambient</button><button class="seg-btn" data-bgm="aurora">Aurora</button><button class="seg-btn" data-bgm="minimal">Minimal</button></div>
-        <div class="group mb-6"><div class="flex justify-between text-white/60 mb-1"><span>Glow</span><span id="ui-glow-n" class="ui-val">100%</span></div><input type="range" id="ui-glow" min="0" max="100" class="w-full ui-range" aria-label="Glow"></div>
-        <p class="ui-h">Wallpaper</p>
-        <div class="flex gap-2 mb-3"><button id="wall-pick" class="seg-btn flex-1"><i class="fas fa-image mr-1.5"></i><span id="wall-pick-t">Choose image</span></button><button id="wall-rm" class="seg-btn hidden">Remove</button></div>
+        <div id="set-search" class="hidden"><input id="set-q" type="search" autocomplete="off" placeholder="Search settings" aria-label="Search settings"></div>
+
+        <div id="set-hub" class="set-view">
+            <p class="ui-h">Listening</p>
+            <button class="hub-row" data-go="play"><span class="hub-chip" style="--c:#ff8a65"><i class="fas fa-circle-play"></i></span><span class="hub-t"><b>Playback</b><small>Skip step, fades, sleep timer, memory</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <button class="hub-row" data-lab="lab"><span class="hub-chip" style="--c:#7c8cff"><i class="fas fa-sliders"></i></span><span class="hub-t"><b>Sound &amp; effects</b><small>Equalizer, loudness, bit-perfect</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <button class="hub-row" data-go="lyrics"><span class="hub-chip" style="--c:#ff7ab0"><i class="fas fa-language"></i></span><span class="hub-t"><b>Lyrics</b><small>Translation, size, alignment</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <p class="ui-h mt-5">Customize</p>
+            <button class="hub-row" data-go="look"><span class="hub-chip" style="--c:#9a8cff"><i class="fas fa-palette"></i></span><span class="hub-t"><b>Appearance</b><small>Theme color, background, wallpaper</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <button class="hub-row" data-go="disp"><span class="hub-chip" style="--c:#4dd0e1"><i class="fas fa-text-height"></i></span><span class="hub-t"><b>Display</b><small>Text size, lists, time display</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <button class="hub-row" data-go="perf"><span class="hub-chip" style="--c:#ffb454"><i class="fas fa-gauge-high"></i></span><span class="hub-t"><b>Performance</b><small>Smoothness, motion, focus mode</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <button class="hub-row" data-go="library"><span class="hub-chip" style="--c:#4fc3f7"><i class="fas fa-music"></i></span><span class="hub-t"><b>Music library</b><small>Add songs, folders, titles, covers</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <p class="ui-h mt-5">Control &amp; data</p>
+            <button class="hub-row" data-go="ctl"><span class="hub-chip" style="--c:#ffd166"><i class="fas fa-hand-pointer"></i></span><span class="hub-t"><b>Controls</b><small>Shortcuts, gestures, haptics, screen</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <button class="hub-row" data-go="priv"><span class="hub-chip" style="--c:#66d9a0"><i class="fas fa-shield-halved"></i></span><span class="hub-t"><b>Privacy &amp; online</b><small>Offline mode, what leaves your device</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <button class="hub-row" data-go="data"><span class="hub-chip" style="--c:#b39ddb"><i class="fas fa-box-archive"></i></span><span class="hub-t"><b>Backup &amp; data</b><small>Export, restore, clear, storage</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+            <p class="ui-h mt-5">About</p>
+            <button class="hub-row" data-go="app"><span class="hub-chip" style="--c:#5be3a8"><i class="fas fa-mobile-screen"></i></span><span class="hub-t"><b>App</b><small>Install, updates, version, licence</small></span><i class="fas fa-chevron-right hub-go"></i></button>
+        </div>
+
+        <section class="set-page hidden" data-page="look" data-title="Appearance">
+            <div class="set-item" data-k="theme color accent swatches colour"><p class="ui-h">Theme color</p><div id="ui-swatches" class="flex flex-wrap gap-2.5 mb-1"></div></div>
+            <div class="set-item" data-k="background ambient aurora minimal glow"><p class="ui-h">Background</p><div class="flex gap-2 mb-4"><button class="seg-btn" data-bgm="ambient">Ambient</button><button class="seg-btn" data-bgm="aurora">Aurora</button><button class="seg-btn" data-bgm="minimal">Minimal</button></div>
+                <div class="group mb-1"><div class="flex justify-between text-white/60 mb-1"><span>Glow</span><span id="ui-glow-n" class="ui-val">100%</span></div><input type="range" id="ui-glow" min="0" max="100" class="w-full ui-range" aria-label="Glow"></div></div>
+            <div class="set-item" data-k="wallpaper image blur dim picture"><p class="ui-h">Wallpaper</p><div class="flex gap-2 mb-3"><button id="wall-pick" class="seg-btn flex-1"><i class="fas fa-image mr-1.5"></i><span id="wall-pick-t">Choose image</span></button><button id="wall-rm" class="seg-btn hidden">Remove</button></div>
         <input id="wall-file" type="file" accept="image/*" class="hidden">
         <div id="wall-ctl" class="hidden">
             <div class="group mb-4"><div class="flex justify-between text-white/60 mb-1"><span>Blur</span><span id="wall-blur-n" class="ui-val">0</span></div><input type="range" id="wall-blur" min="0" max="40" class="w-full ui-range" aria-label="Wallpaper blur"></div>
             <div class="group mb-6"><div class="flex justify-between text-white/60 mb-1"><span>Dim</span><span id="wall-dim-n" class="ui-val">35%</span></div><input type="range" id="wall-dim" min="0" max="90" class="w-full ui-range" aria-label="Wallpaper dim"></div>
-        </div>
-        <p class="ui-h">App</p>
-        <div class="mb-6"><button id="app-inst-btn" class="seg-btn w-full hidden mb-2"><i class="fas fa-download mr-1.5"></i>Install Athana</button><p id="app-inst-hint" class="text-xs text-white/45 leading-relaxed"></p>
-            <button id="app-upd-btn" class="seg-btn w-full mt-3 mb-2"><i class="fas fa-rotate mr-1.5"></i>Check for updates</button><p id="app-upd-hint" class="text-xs text-white/45 leading-relaxed">Athana checks for new versions automatically.</p></div>
-        <p class="ui-h">Display</p>
-        <button class="ui-row" id="row-focus"><span><i class="fas fa-expand"></i>Focus mode<small>F</small></span><i class="sw"></i></button>
-        <button class="ui-row" id="row-calm"><span><i class="fas fa-wind"></i>Reduce animations</span><i class="sw"></i></button>
-        <p class="ui-h mt-6">Lyrics translation</p>
-        <div class="flex gap-2">
+        </div></div>
+        </section>
+
+        <section class="set-page hidden" data-page="perf" data-title="Performance">
+            <div class="set-item" data-k="performance mode blur glow smooth slow phone battery"><button class="ui-row" id="row-lite"><span><i class="fas fa-bolt"></i>Performance mode</span><i class="sw"></i></button><p class="set-hint">Turns off live blur and the moving glow so playback and scrolling stay smooth on slower phones. On by default in the Android app.</p></div>
+            <div class="set-item" data-k="reduce animations motion calm"><button class="ui-row" id="row-calm"><span><i class="fas fa-wind"></i>Reduce animations</span><i class="sw"></i></button><p class="set-hint">Calmer motion throughout the player.</p></div>
+            <div class="set-item" data-k="focus mode hide distraction fullscreen"><button class="ui-row" id="row-focus"><span><i class="fas fa-expand"></i>Focus mode<small>F</small></span><i class="sw"></i></button><p class="set-hint">Hides everything except the music. Press F to toggle.</p></div>
+        </section>
+
+        <section class="set-page hidden" data-page="lyrics" data-title="Lyrics">
+            <div class="set-item" data-k="lyrics translation api key gemini claude openai romaji">
+                <p class="ui-h">Translation</p>
+                <div class="flex gap-2">
             <input id="ai-key" type="password" autocomplete="off" placeholder="API key (Gemini, Claude or OpenAI)" class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none focus:border-white/30 text-xs font-semibold placeholder-white/30">
             <button id="ai-save" class="seg-btn">Save</button>
         </div>
         <p id="ai-note" class="text-[11px] text-white/40 mt-2 font-medium leading-snug"></p>
-        <button id="ui-reset" class="seg-btn w-full mt-5">Reset to default</button>
+            </div>
+            <div class="set-item" data-k="translate language target into indonesian english spanish japanese"><p class="ui-h">Translate into</p><select id="set-trlang" class="set-sel" aria-label="Translation language"><option value="id">Indonesian</option><option value="en">English</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="pt">Portuguese</option><option value="it">Italian</option><option value="ru">Russian</option><option value="ja">Japanese</option><option value="ko">Korean</option><option value="zh-CN">Chinese</option><option value="ar">Arabic</option><option value="hi">Hindi</option><option value="tr">Turkish</option><option value="th">Thai</option><option value="vi">Vietnamese</option><option value="ms">Malay</option><option value="tl">Filipino</option></select><p class="set-hint">The language used by the translate button on the Lyrics tab. The casual style is Indonesian only; other languages are translated naturally.</p></div>
+            <div class="set-item" data-k="romaji japanese reading latin"><button class="ui-row" data-mir="romaji"><span><i class="fas fa-font"></i>Show romaji</span><i class="sw"></i></button><p class="set-hint">Latin letters under Japanese lyrics.</p></div>
+            <div class="set-item" data-k="translation show translate"><button class="ui-row" data-mir="trans"><span><i class="fas fa-globe"></i>Show translation</span><i class="sw"></i></button><p class="set-hint">The translated line under each lyric.</p></div>
+            <div class="set-item" data-k="lyrics size font text large"><p class="ui-h">Lyrics size</p><div class="flex justify-between text-white/60 mb-1"><span>Size</span><span class="ui-val" data-rv="lyrScale"></span></div><input type="range" data-rng="lyrScale" min="80" max="150" step="5" class="w-full ui-range" aria-label="Lyrics size"><p class="set-hint">Bigger lyrics for reading from a distance.</p></div>
+            <div class="set-item" data-k="lyrics alignment center left"><p class="ui-h">Lyrics alignment</p><div class="flex flex-wrap gap-2" data-set="lyrAlign" data-type="str"><button class="seg-btn" data-v="left">Left</button><button class="seg-btn" data-v="center">Centered</button></div><p class="set-hint"></p></div>
+            <div class="set-item" data-k="lyrics blur focus soften dim"><button class="ui-row" data-tog="lyrBlur"><span><i class="fas fa-droplet"></i>Soften lines that are not playing</span><i class="sw"></i></button><p class="set-hint">Fades and blurs the lines before and after the current one. Turn off for crisp text everywhere.</p></div>
+        </section>
+
+        <section class="set-page hidden" data-page="library" data-title="Music library">
+            <div class="set-item" data-k="add music songs folder files library import">
+                <button class="seg-btn w-full" id="set-add"><i class="fas fa-plus mr-1.5"></i>Add music…</button>
+                <p class="set-hint">Pick songs or a whole folder. Songs you already have are skipped.</p>
+            </div>
+            <div class="set-item" data-k="refresh library rescan folder new songs"><button class="seg-btn w-full" id="set-refresh"><i class="fas fa-rotate mr-1.5"></i>Refresh library</button><p class="set-hint">Picks up songs added to your linked folders without interrupting playback.</p></div>
+            <div class="set-item" data-k="titles clean numbers track number file name"><button class="ui-row" data-tog="cleanNum"><span><i class="fas fa-hashtag"></i>Tidy song titles</span><i class="sw"></i></button><p class="set-hint">Removes track numbers like "01 -" from the start of file names. Applies to songs you add from now on.</p></div>
+            <div class="set-item" data-k="folder cover art images jpg picture"><button class="ui-row" data-tog="folderArt"><span><i class="fas fa-folder-open"></i>Use pictures from song folders as covers</span><i class="sw"></i></button><p class="set-hint">Uses cover.jpg, folder.jpg and similar images found next to your songs. Applies to songs you add from now on.</p></div>
+        </section>
+
+        <section class="set-page hidden" data-page="app" data-title="App">
+            <div class="set-item" data-k="install app update version check new"><div class="mb-6"><button id="app-inst-btn" class="seg-btn w-full hidden mb-2"><i class="fas fa-download mr-1.5"></i>Install Athana</button><p id="app-inst-hint" class="text-xs text-white/45 leading-relaxed"></p>
+            <button id="app-upd-btn" class="seg-btn w-full mt-3 mb-2"><i class="fas fa-rotate mr-1.5"></i>Check for updates</button><p id="app-upd-hint" class="text-xs text-white/45 leading-relaxed">Athana checks for new versions automatically.</p></div>
+                <div class="flex items-center justify-between mt-4 text-xs text-white/50"><span>Version</span><span id="set-ver" class="font-bold text-white/80"></span></div>
+                <button id="set-new" class="seg-btn w-full mt-3"><i class="fas fa-wand-magic-sparkles mr-1.5"></i>What’s new</button>
+            </div>
+            <div class="set-item" data-k="about licence license open source credits github mit"><p class="ui-h mt-6">About</p>
+                <p class="set-hint" style="margin-top:0">Athana is free, open-source software under the MIT licence.</p>
+                <p class="set-hint">Built with Tailwind CSS, Font Awesome Free, jsmediatags and kuromoji.js, each under its own open-source licence.</p>
+                <a class="seg-btn w-full block text-center mt-3" href="https://github.com/Kanatahiroshi25/Athana-Release" target="_blank" rel="noopener"><i class="fab fa-github mr-1.5"></i>Source code on GitHub</a></div>
+        </section>
+
+        <section class="set-page hidden" data-page="play" data-title="Playback">
+            <div class="set-item" data-k="skip seek rewind forward jump seconds step"><p class="ui-h">Skip buttons jump</p><div class="flex flex-wrap gap-2" data-set="skipSec" data-type="num"><button class="seg-btn" data-v="5">5 s</button><button class="seg-btn" data-v="10">10 s</button><button class="seg-btn" data-v="15">15 s</button><button class="seg-btn" data-v="30">30 s</button></div><p class="set-hint">How far the back and forward buttons, the arrow keys and your headset's seek buttons move.</p></div>
+            <div class="set-item" data-k="previous back restart rewind song"><p class="ui-h">Previous button</p><div class="flex flex-wrap gap-2" data-set="prevRestart" data-type="num"><button class="seg-btn" data-v="0">Always previous</button><button class="seg-btn" data-v="3">Restart after 3 s</button><button class="seg-btn" data-v="5">After 5 s</button><button class="seg-btn" data-v="10">After 10 s</button></div><p class="set-hint">Past this point in a song, Previous starts the song over first; press it again to go back one song.</p></div>
+            <div class="set-item" data-k="fade pause resume smooth soften volume ramp"><p class="ui-h">Fade on pause and resume</p><div class="flex flex-wrap gap-2" data-set="fadeMs" data-type="num"><button class="seg-btn" data-v="0">Off</button><button class="seg-btn" data-v="300">Short</button><button class="seg-btn" data-v="600">Medium</button><button class="seg-btn" data-v="1000">Long</button></div><p class="set-hint">Softens the start and stop of the sound. Turned off automatically in bit-perfect mode, which keeps the volume untouched.</p></div>
+            <div class="set-item" data-k="autoplay start automatically add songs"><button class="ui-row" data-tog="autoplay"><span><i class="fas fa-play"></i>Start playing after adding songs</span><i class="sw"></i></button><p class="set-hint">When you add music to an empty queue, the first song starts by itself.</p></div>
+            <div class="set-item" data-k="remember repeat loop mode"><button class="ui-row" data-tog="remRepeat"><span><i class="fas fa-repeat"></i>Remember repeat mode</span><i class="sw"></i></button><p class="set-hint">Keeps Repeat off, all or one the next time you open Athana.</p></div>
+            <div class="set-item" data-k="remember shuffle random mode"><button class="ui-row" data-tog="remShuffle"><span><i class="fas fa-shuffle"></i>Remember shuffle</span><i class="sw"></i></button><p class="set-hint">Opens with shuffle on if it was on when you left.</p></div>
+            <div class="set-item" data-k="sleep timer finish song end stop night"><button class="ui-row" data-tog="sleepFinish"><span><i class="fas fa-moon"></i>Sleep timer waits for the song to end</span><i class="sw"></i></button><p class="set-hint">When the timer runs out, the current song finishes first instead of stopping in the middle.</p></div>
+            <div class="set-item" data-k="play count history statistics listened"><p class="ui-h">Count a play after</p><div class="flex flex-wrap gap-2" data-set="countAt" data-type="num"><button class="seg-btn" data-v="10">10 s</button><button class="seg-btn" data-v="30">30 s</button><button class="seg-btn" data-v="9999">Almost the end</button></div><p class="set-hint">Decides when a song counts in your play counts and history.</p></div>
+        </section>
+
+        <section class="set-page hidden" data-page="disp" data-title="Display">
+            <div class="set-item" data-k="text size font scale zoom large small accessibility"><p class="ui-h">Text and interface size</p><div class="flex justify-between text-white/60 mb-1"><span>Size</span><span class="ui-val" data-rv="uiScale"></span></div><input type="range" data-rng="uiScale" min="85" max="130" step="5" class="w-full ui-range" aria-label="Text and interface size"><p class="set-hint">Makes everything in Athana a little smaller or larger.</p></div>
+            <div class="set-item" data-k="list density compact rows spacing"><p class="ui-h">Song list</p><div class="flex flex-wrap gap-2" data-set="listDensity" data-type="str"><button class="seg-btn" data-v="comfy">Comfortable</button><button class="seg-btn" data-v="compact">Compact</button></div><p class="set-hint">Compact shows more songs on screen by using smaller covers and hiding the details line.</p></div>
+            <div class="set-item" data-k="covers thumbnails list pictures"><button class="ui-row" data-tog="listCovers"><span><i class="fas fa-image"></i>Show covers in song lists</span><i class="sw"></i></button><p class="set-hint">Turn off for a plain list of titles.</p></div>
+            <div class="set-item" data-k="format details bit depth sample rate khz flac list"><button class="ui-row" data-tog="listMeta"><span><i class="fas fa-circle-info"></i>Show format details in song lists</span><i class="sw"></i></button><p class="set-hint">Length, file type, sample rate and bit depth under each song.</p></div>
+            <div class="set-item" data-k="time remaining countdown duration total"><button class="ui-row" data-tog="remain"><span><i class="fas fa-hourglass-half"></i>Show time remaining</span><i class="sw"></i></button><p class="set-hint">The right-hand time counts down instead of showing the full length. You can also tap it on the player.</p></div>
+            <div class="set-item" data-k="title artist hide idle fade cover info"><button class="ui-row" data-tog="idleHide"><span><i class="fas fa-eye-slash"></i>Fade the title over the cover</span><i class="sw"></i></button><p class="set-hint">Hides the title and artist after a few seconds of playing. Turn off to keep them visible.</p></div>
+        </section>
+
+        <section class="set-page hidden" data-page="ctl" data-title="Controls">
+            <div class="set-item" data-k="keyboard shortcuts keys hotkeys"><button class="ui-row" data-tog="keys"><span><i class="fas fa-keyboard"></i>Keyboard shortcuts</span><i class="sw"></i></button><p class="set-hint">Turn off if keys get in the way of another app or a screen reader.</p></div>
+            <div class="set-item" data-k="swipe gesture cover next previous touch"><button class="ui-row" data-tog="swipe"><span><i class="fas fa-hand"></i>Swipe the cover to change song</span><i class="sw"></i></button><p class="set-hint">Swipe left for next, right for previous. Touch screens only.</p></div>
+            <div class="set-item" data-k="double tap gesture cover play pause"><button class="ui-row" data-tog="dtap"><span><i class="fas fa-hand-point-up"></i>Double-tap the cover to play or pause</span><i class="sw"></i></button><p class="set-hint">Touch screens only.</p></div>
+            <div class="set-item" data-k="haptic vibrate vibration feedback"><button class="ui-row" data-tog="haptic"><span><i class="fas fa-wave-square"></i>Vibrate on tap</span><i class="sw"></i></button><p class="set-hint">A tiny buzz when you press buttons. Needs a phone that can vibrate.</p></div>
+            <div class="set-item" data-k="screen awake wake lock sleep display on lyrics"><button class="ui-row" data-tog="awake"><span><i class="fas fa-sun"></i>Keep the screen on while playing</span><i class="sw"></i></button><p class="set-hint">Stops the screen from sleeping during playback, handy for lyrics. Uses more battery.</p></div>
+            <div class="set-item" data-k="shortcuts keys list reference space arrows"><p class="ui-h">Shortcuts</p>
+                <div class="set-kbd"><span>Play / pause</span><kbd>Space</kbd></div>
+                <div class="set-kbd"><span>Seek back / forward</span><kbd>← →</kbd></div>
+                <div class="set-kbd"><span>Next / previous song</span><kbd>N</kbd><kbd>P</kbd></div>
+                <div class="set-kbd"><span>Volume</span><kbd>↑ ↓</kbd></div>
+                <div class="set-kbd"><span>Mute</span><kbd>M</kbd></div>
+                <div class="set-kbd"><span>Shuffle / repeat</span><kbd>S</kbd><kbd>R</kbd></div>
+                <div class="set-kbd"><span>Focus mode</span><kbd>F</kbd></div>
+                <div class="set-kbd"><span>Loop A / B / clear</span><kbd>[</kbd><kbd>]</kbd><kbd>\</kbd></div>
+            </div>
+        </section>
+
+        <section class="set-page hidden" data-page="priv" data-title="Privacy &amp; online">
+            <div class="set-item" data-k="offline mode internet network airplane"><button class="ui-row" data-tog="offline"><span><i class="fas fa-plane"></i>Offline mode</span><i class="sw"></i></button><p class="set-hint">Athana makes no internet requests of its own: no lyrics, covers, translation or update checks. Your music always stays on your device.</p></div>
+            <div id="net-group" class="transition-opacity">
+            <div class="set-item" data-k="online lyrics lookup lrclib internet"><button class="ui-row" data-tog="netLyrics"><span><i class="fas fa-align-left"></i>Look up lyrics online</span><i class="sw"></i></button><p class="set-hint">Sends the song title and artist to lrclib.net and a few lyric sites.</p></div>
+            <div class="set-item" data-k="automatic lyrics find auto"><button class="ui-row" data-mir="lrcauto"><span><i class="fas fa-wand-magic-sparkles"></i>Find lyrics automatically</span><i class="sw"></i></button><p class="set-hint">Searches for lyrics by itself when a song has none stored in its file.</p></div>
+            <div class="set-item" data-k="online cover art musicbrainz internet"><button class="ui-row" data-tog="netCovers"><span><i class="fas fa-compact-disc"></i>Look up covers online</span><i class="sw"></i></button><p class="set-hint">Sends album and artist names to MusicBrainz when you use Find covers.</p></div>
+            <div class="set-item" data-k="translate translation google ai internet"><button class="ui-row" data-tog="netTranslate"><span><i class="fas fa-language"></i>Translate lyrics online</span><i class="sw"></i></button><p class="set-hint">Sends lyric lines to Google Translate, or to the AI service you added a key for.</p></div>
+            <div class="set-item" data-k="updates check version internet"><button class="ui-row" data-tog="netUpdates"><span><i class="fas fa-rotate"></i>Check for new versions</span><i class="sw"></i></button><p class="set-hint">Only asks this page's own address whether a newer copy exists. Web version.</p></div>
+            </div>
+            <div class="set-item" data-k="api key remove forget delete ai"><button class="hub-row hub-act" id="ai-forget"><span class="hub-chip" style="--c:#ff9f43"><i class="fas fa-key"></i></span><span class="hub-t"><b>Remove saved API key</b><small>Deletes the translation key from this device.</small></span></button></div>
+            <div class="set-item" data-k="privacy what leaves device data info"><p class="ui-h">Good to know</p>
+                <p class="set-hint" style="margin-top:0">Your songs, covers and settings are stored only on this device. Athana has no account, no analytics and no ads.</p>
+                <p class="set-hint">The page loads its fonts, icons and styling from public content networks (jsDelivr, Tailwind and Font Awesome). Those hosts can see that a page was opened, not what you play.</p>
+            </div>
+        </section>
+
+        <section class="set-page hidden" data-page="data" data-title="Backup &amp; data">
+            <div class="set-item" data-k="backup export save settings playlists history"><p class="ui-h">Backup</p>
+                <div class="flex flex-wrap gap-2"><button id="bk-file" class="seg-btn flex-1"><i class="fas fa-file-arrow-down mr-1.5"></i>Save file</button><button id="bk-copy" class="seg-btn flex-1"><i class="fas fa-copy mr-1.5"></i>Copy</button></div>
+                <p class="set-hint">Settings, playlists, song edits, play counts and equalizer. Your music files and saved cover images are not included.</p></div>
+            <div class="set-item" data-k="backup api key include"><button class="ui-row" data-tog="bkKey"><span><i class="fas fa-key"></i>Include my API key in backups</span><i class="sw"></i></button><p class="set-hint">Off by default so a backup file is safe to share.</p></div>
+            <div class="set-item" data-k="restore import backup load"><p class="ui-h">Restore</p>
+                <div class="flex flex-wrap gap-2"><button id="bk-load" class="seg-btn flex-1"><i class="fas fa-file-arrow-up mr-1.5"></i>From file</button><button id="bk-paste" class="seg-btn flex-1"><i class="fas fa-paste mr-1.5"></i>Paste</button></div>
+                <input id="bk-in" type="file" accept=".json,application/json" class="hidden">
+                <p class="set-hint">Athana restarts after restoring.</p></div>
+            <div class="set-item" data-k="storage space usage size"><p class="ui-h">Storage</p><p id="bk-usage" class="set-hint" style="margin:0 12px">Checking…</p></div>
+            <div class="set-item" data-k="clear lyrics translations cache"><button class="hub-row hub-act" id="dt-lyr"><span class="hub-chip" style="--c:#4fc3f7"><i class="fas fa-align-left"></i></span><span class="hub-t"><b>Clear saved lyrics and translations</b><small>They are fetched again when needed.</small></span></button></div>
+            <div class="set-item" data-k="clear covers cache images"><button class="hub-row hub-act" id="dt-cov"><span class="hub-chip" style="--c:#4fc3f7"><i class="fas fa-compact-disc"></i></span><span class="hub-t"><b>Clear saved covers</b><small>Covers you picked or downloaded. Embedded covers stay.</small></span></button></div>
+            <div class="set-item" data-k="clear history play counts statistics"><button class="hub-row hub-act" id="dt-his"><span class="hub-chip" style="--c:#4fc3f7"><i class="fas fa-clock-rotate-left"></i></span><span class="hub-t"><b>Clear play history</b><small>Play counts and recently played.</small></span></button></div>
+            <div class="set-item" data-k="reset options defaults"><button class="hub-row hub-act" id="dt-opt"><span class="hub-chip" style="--c:#ffb454"><i class="fas fa-sliders"></i></span><span class="hub-t"><b>Reset options</b><small>Playback, display, controls and privacy options only.</small></span></button></div>
+            <div class="set-item" data-k="erase delete everything wipe all data factory reset"><button class="hub-row hub-act" id="dt-all"><span class="hub-chip" style="--c:#ff6b6b"><i class="fas fa-trash-can"></i></span><span class="hub-t"><b>Erase everything</b><small>Settings, playlists, covers, history and saved folders on this device.</small></span></button></div>
+        </section>
+
+        <div id="set-other" class="set-view">
+            <p class="ui-h mt-5">Other</p>
+            <div class="set-item" data-k="diagnostics report bug copy log help support"><button class="hub-row hub-act" id="diag-copy"><span class="hub-chip" style="--c:#b0b7c3"><i class="fas fa-clipboard-list"></i></span><span class="hub-t"><b>Copy diagnostics</b><small>For bug reports: what the app did recently. Only song titles, no personal data.</small></span></button></div>
+            <div class="set-item" data-k="reset default restore settings"><button class="hub-row hub-act" id="ui-reset"><span class="hub-chip" style="--c:#ff6b6b"><i class="fas fa-rotate-left"></i></span><span class="hub-t"><b>Reset to default</b><small>Theme, background and display options</small></span></button></div>
+        </div>
+        <p id="set-none" class="hidden text-center text-white/40 text-sm font-medium mt-10">No settings found</p>
     </aside>
 
     <!-- Toast Notification -->
@@ -839,6 +1042,20 @@
 
     <script>
         // Tab Navigation Logic
+        // ----- Phones: the queue is a bottom sheet (tap or drag the bar; tabs also open it) -----
+        const sheet = document.getElementById('queue-sheet'), sheetGrip = document.getElementById('sheet-grip'), isPhone = () => matchMedia('(max-width: 767px)').matches;
+        function sheetOpen(v) { if (!isPhone()) return; sheet.classList.toggle('open', v); document.documentElement.classList.toggle('sheet-open', v); }
+        (() => {
+            let y0 = null, moved = 0;
+            const down = e => { y0 = e.clientY; moved = 0; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) { } };
+            const move = e => { if (y0 != null) moved = e.clientY - y0; };
+            const up = () => { if (y0 == null) return; if (moved < -30) sheetOpen(true); else if (moved > 30) sheetOpen(false); else sheetOpen(!sheet.classList.contains('open')); y0 = null; };
+            sheetGrip.addEventListener('pointerdown', down); sheetGrip.addEventListener('pointermove', move); sheetGrip.addEventListener('pointerup', up); sheetGrip.addEventListener('pointercancel', () => { y0 = null; });
+            document.getElementById('sheet-head').addEventListener('pointerdown', e => { if (isPhone() && !sheet.classList.contains('open') && !e.target.closest('#btn-add-modal')) { sheetOpen(true); } });
+            document.getElementById('sheet-dim').addEventListener('click', () => sheetOpen(false));
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') sheetOpen(false); });
+            addEventListener('resize', () => { if (!isPhone()) { sheet.classList.remove('open'); document.documentElement.classList.remove('sheet-open'); } });
+        })();
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 // Remove active styling from all tabs
@@ -899,12 +1116,143 @@
         // App State
         let playlist = []; 
         let currentTrackIndex = -1;
+        // Diagnostics: a short log of why each song started (a tap, Next, the song ending, the notification...) and of playback errors.
+        const DIAG = { plays: [], errs: [], fmt: [] }; let playCause = '';
+        const diagPush = (a, row) => { a.push(row); if (a.length > 60) a.shift(); };
+        const diagTime = () => new Date().toTimeString().slice(0, 8);
         let ordSeq = 0, sortMode = 0; // sortMode: 0 = original, 1 = A-Z, 2 = Z-A
+        // ===== Options (Settings): one small store; every option is read at the place where it takes effect =====
+        const SET_DEF = {
+            skipSec: 10, prevRestart: 3, autoplay: false, remRepeat: true, remShuffle: false, fadeMs: 0, sleepFinish: false, countAt: 30, repeatSaved: 0, shuffleSaved: false,
+            keys: true, swipe: true, dtap: false, haptic: false, awake: false,
+            uiScale: 100, listDensity: 'comfy', listCovers: true, listMeta: true, remain: false, idleHide: true,
+            lyrScale: 100, lyrAlign: 'left', lyrBlur: true, trLang: 'id',
+            offline: false, netLyrics: true, netCovers: true, netTranslate: true, netUpdates: true,
+            cleanNum: true, folderArt: true, bkKey: false
+        };
+        const SET = Object.assign({}, SET_DEF);
+        try { Object.assign(SET, JSON.parse(localStorage.getItem('athana_set') || '{}')); } catch (e) { }
+        Object.keys(SET).forEach(k => { if (!(k in SET_DEF) || typeof SET[k] !== typeof SET_DEF[k]) { if (k in SET_DEF) SET[k] = SET_DEF[k]; else delete SET[k]; } });
+        const setSave = () => { try { localStorage.setItem('athana_set', JSON.stringify(SET)); } catch (e) { } };
+        const TR_LANGS = { id: 'Indonesian', en: 'English', es: 'Spanish', fr: 'French', de: 'German', pt: 'Portuguese', it: 'Italian', ru: 'Russian', ja: 'Japanese', ko: 'Korean', 'zh-CN': 'Chinese', ar: 'Arabic', hi: 'Hindi', tr: 'Turkish', th: 'Thai', vi: 'Vietnamese', ms: 'Malay', tl: 'Filipino' };
+        if (!TR_LANGS[SET.trLang]) SET.trLang = 'id';
+        // Online services can be switched off. Every request to them passes through here; the rest of the app already treats a failed request as "no internet".
+        const NET_RULES = [[/(^|\.)(lrclib\.net|lyrics\.ovh|umamusu\.wiki)$/, 'netLyrics', 'Online lyrics search'], [/(^|\.)(musicbrainz\.org|coverartarchive\.org)$/, 'netCovers', 'Online cover search'], [/(^|\.)(translate\.googleapis\.com|mymemory\.translated\.net|api\.anthropic\.com|generativelanguage\.googleapis\.com|api\.openai\.com)$/, 'netTranslate', 'Lyric translation']];
+        const netBlocked = host => { for (const [re, k, name] of NET_RULES) if (re.test(host)) return (SET.offline || !SET[k]) ? name : null; return null; };
+        (() => {
+            const raw = window.fetch.bind(window), warned = {};
+            window.fetch = (input, init) => {
+                let h = ''; try { h = new URL(typeof input === 'string' ? input : input.url, location.href).hostname; } catch (e) { }
+                const b = netBlocked(h);
+                if (b) { if (!warned[b] || Date.now() - warned[b] > 20000) { warned[b] = Date.now(); showToast(b + ' is turned off in Settings \u2192 Privacy & online.'); } return Promise.reject(new TypeError('Turned off in Athana settings: ' + b)); }
+                return raw(input, init);
+            };
+        })();
         let ui = { bg: 'ambient', glow: 100, accent: null, calm: false, focus: false, wall: 0, wallBlur: 0, wallDim: 35 }; // Interface menu settings
         try { sortMode = +localStorage.getItem('athana_sort') || 0; } catch (e) { }
         let isPlaying = false;
         let folderArtUrl = null; 
-        const audio = new Audio();
+        (() => { // performance mode: on by default in the Android app, or on weak phones; the Settings switch overrides
+            let pref = null; try { pref = localStorage.getItem('athana_lite'); } catch (e) { }
+            const weak = (navigator.deviceMemory && navigator.deviceMemory <= 4) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+            const on = pref === '1' || (pref !== '0' && (!!window.AthanaNative || (matchMedia('(pointer: coarse)').matches && weak)));
+            window.__lite = on; document.documentElement.classList.toggle('lite', on);
+        })();
+        /* ----- Native Android player (only used inside the Athana Android app) -----
+           The app injects window.AthanaNative; this class then stands in for the <audio> element, so the rest of the page keeps
+           working unchanged while Android's own Media3/ExoPlayer decodes and plays the music instead of the browser engine. */
+        class NativeAudio extends EventTarget {
+            constructor() {
+                super(); this.N = window.AthanaNative; this.isNative = true;
+                this._src = ''; this._tok = 0; this._pos = 0; this._t0 = 0; this._dur = NaN; this._paused = true; this._run = false;
+                this._vol = 1; this._muted = false; this._rate = 1; this._pp = true; this.error = null; this.seeking = false; this.ended = false;
+                this.readyState = 0; this.preload = 'metadata'; this.defaultPlaybackRate = 1; this.outHz = 0; this.nativeCodec = ''; this._open = Promise.resolve(); this.blobs = new Map();
+                const cu = URL.createObjectURL.bind(URL), ru = URL.revokeObjectURL.bind(URL);
+                URL.createObjectURL = o => { const u = cu(o); if (o instanceof Blob) this.blobs.set(u, o); return u; };
+                URL.revokeObjectURL = u => { this.blobs.delete(u); ru(u); };
+                window.__nat = {
+                    state: (tok, pos, dur, pwr, playing, ended) => {
+                        if (tok !== this._tok) return;
+                        this._pos = pos / 1000; this._t0 = performance.now(); this._run = !!playing;
+                        if (dur > 0 && !(this._dur > 0)) { this._dur = dur / 1000; this.readyState = 4; this._emit('durationchange'); this._emit('loadedmetadata'); this._emit('canplay'); }
+                        else if (dur > 0 && Math.abs(dur / 1000 - this._dur) > 0.5) { this._dur = dur / 1000; this._emit('durationchange'); }
+                        if (ended) { this.ended = true; this._paused = true; this._run = false; this._emit('timeupdate'); this._emit('pause'); this._emit('ended'); return; }
+                        this._emit('timeupdate');
+                    },
+                    error: (tok, code, msg) => { if (tok !== this._tok) return; this.error = { code, message: msg }; this._paused = true; this._run = false; this._emit('error'); },
+                    info: (tok, mime, hz, enc, out) => { if (tok !== this._tok) return; this.nativeCodec = mime; this.nativeHz = hz; this.nativeEnc = enc; this.outHz = out;
+                        try { const t = playlist[currentTrackIndex], d = this._dur, kb = t && d > 0 ? Math.round(t.fileObj.size * 8 / d / 1000) : 0, E = { 2: '16-bit', 3: '8-bit', 4: 'float', 21: '24-bit', 22: '32-bit' };
+                            diagPush(DIAG.fmt, [diagTime(), t && t.title, t && t.fileObj.name.split('.').pop().toLowerCase(), mime, hz + ' Hz', E[enc] || 'compressed', 'device out ' + out + ' Hz', kb ? '~' + kb + ' kbps' : '']); } catch (e) { } },
+                    scan: () => showToast('Scanning folder...'),
+                    dirs: m => { window.__natFolder = m; },                       // folder of every song in the folder the app just opened
+                    empty: () => { window.__natArmed = 0; showToast('No songs found in that folder'); },
+                    cancel: () => { window.__natArmed = 0; },
+                    cmd: name => { // buttons on the Android notification and lock screen
+                        const b = id => document.getElementById(id);
+                        if (name === 'play' && this._paused) b('btn-play-pause').click();
+                        else if (name === 'pause' && !this._paused) b('btn-play-pause').click();
+                        else if (name === 'next') { playCause = 'notification:next'; b('btn-next').click(); }
+                        else if (name === 'prev') { playCause = 'notification:previous'; b('btn-prev').click(); }
+                        else if (name.startsWith('seek:')) this.currentTime = +name.slice(5) / 1000;
+                    }
+                };
+            }
+            _emit(n) { this.dispatchEvent(new Event(n)); }
+            _meta() { try { const t = playlist[currentTrackIndex], a = artistOf(t); return { title: t.title || '', artist: a === 'Unknown artist' ? '' : a, album: (t.meta && t.meta.album) || '' }; } catch (e) { return {}; } }
+            async _art() { // the cover, shrunk to a small JPEG, for the Android notification and lock screen
+                try {
+                    const t = playlist[currentTrackIndex], u = t.coverUrl || folderArtUrl; if (!u) return '';
+                    const img = new Image(); img.src = u; await img.decode();
+                    const k = Math.min(1, 512 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+                    c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k)); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                    return c.toDataURL('image/jpeg', 0.85).split(',')[1] || '';
+                } catch (e) { return ''; }
+            }
+            _set(u) {
+                const tok = ++this._tok; this._src = u; this._pos = 0; this._dur = NaN; this._paused = true; this._run = false; this.ended = false; this.error = null; this.readyState = 0;
+                if (!u) { this._open = Promise.resolve(); this.N.stop(); return; }
+                queueMicrotask(() => { if (tok === this._tok) this._emit('loadstart'); });
+                this._open = this._openNative(u, tok).catch(e => { if (tok === this._tok) { this.error = { code: 4, message: String(e) }; this._emit('error'); } });
+            }
+            async _openNative(u, tok) {
+                const b = this.blobs.get(u); if (!b) throw new Error('Unknown source'); const meta = JSON.stringify(this._meta()), artP = this._art();   // the cover follows separately, so a big picture can never break the title
+                if (b.name && this.N.open(tok, String(b.name), b.size, meta)) { this._sendArt(tok, artP); return; }   // a file picked in the app: Android reads it straight from storage
+                this.N.beginUpload(tok); const CH = 3 * 1024 * 1024;                              // converted AIFF (in memory): hand the bytes to Android in pieces
+                for (let o = 0; o < b.size; o += CH) {
+                    if (tok !== this._tok) return;
+                    const s = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(b.slice(o, o + CH)); });
+                    this.N.chunk(tok, s);
+                }
+                if (tok === this._tok) { this.N.endUpload(tok, meta); this._sendArt(tok, artP); }
+            }
+            async _sendArt(tok, artP) { const a = await artP; if (a && tok === this._tok) this.N.setArt(tok, a); }
+            get src() { return this._src; } set src(u) { this._set(String(u || '')); }
+            getAttribute(n) { return n === 'src' && this._src ? this._src : null; }
+            removeAttribute(n) { if (n === 'src') this._set(''); }
+            load() { } canPlayType() { return 'maybe'; }
+            setSinkId() { return Promise.reject(new DOMException('Not supported', 'NotSupportedError')); }
+            get paused() { return this._paused; } get duration() { return this._dur; }
+            get currentTime() { if (this._run && !this._paused) { const t = this._pos + (performance.now() - this._t0) / 1000 * this._rate; return this._dur > 0 ? Math.min(t, this._dur) : t; } return this._pos; }
+            set currentTime(v) {
+                v = +v; if (!isFinite(v) || v < 0) v = 0; this._pos = v; this._t0 = performance.now(); this.ended = false; this.N.seek(Math.round(v * 1000)); this.seeking = true; this._emit('seeking');
+                setTimeout(() => { this.seeking = false; this._emit('seeked'); this._emit('timeupdate'); }, 30);
+            }
+            get volume() { return this._vol; } set volume(v) { this._vol = Math.min(1, Math.max(0, +v || 0)); this.N.setVolume(this._muted ? 0 : this._vol); this._emit('volumechange'); }
+            get muted() { return this._muted; } set muted(m) { this._muted = !!m; this.N.setVolume(this._muted ? 0 : this._vol); this._emit('volumechange'); }
+            get playbackRate() { return this._rate; } set playbackRate(r) { this._rate = +r > 0 ? +r : 1; this.N.setSpeed(this._rate, this._pp); this._emit('ratechange'); }
+            get preservesPitch() { return this._pp; } set preservesPitch(v) { this._pp = !!v; this.N.setSpeed(this._rate, this._pp); }
+            play() {
+                if (!this._src) return Promise.reject(new DOMException('No source', 'NotSupportedError'));
+                const was = this._paused, tok = this._tok; this._paused = false; this._t0 = performance.now(); if (was) this._emit('play');
+                this._open.then(() => { if (tok === this._tok && !this._paused) this.N.play(); });
+                return Promise.resolve();
+            }
+            pause() {
+                if (this._paused) return; const t = this.currentTime, tok = this._tok; this._pos = t; this._paused = true; this._run = false;
+                this._open.then(() => { if (tok === this._tok) this.N.pause(); }); this._emit('pause');
+            }
+        }
+        const audio = window.AthanaNative ? new NativeAudio() : new Audio();
         audio.preload = 'metadata';
 
         // ===== Now-Playing UI: waveform, seek, format pill, extra buttons =====
@@ -1010,6 +1358,7 @@
         async function preparePeaks(track) {
             track.peaks = track.peaks || (track.wavBlob && track.wavBlob.peaks) || null;
             peaks = track.peaks || pseudoPeaks(track.title); setInfo(''); refreshInfo(); drawWave();
+            if (audio.isNative && /\.aiff?$/i.test(track.fileObj.name)) return; // no in-page decode of AIFF in the app: keep the placeholder wave
             const ac = document.getElementById('album-art'); ac.classList.remove('swap'); void ac.offsetWidth; ac.classList.add('swap');
             if (track.peaks || track.fileObj.size > 40e6) return; await new Promise(r => setTimeout(r, 700)); if (playlist[currentTrackIndex] !== track) return; // very large files keep the placeholder wave
             try {
@@ -1021,7 +1370,7 @@
                 if (playlist[currentTrackIndex] === track) { peaks = track.peaks; refreshInfo(); drawWave(); }
             } catch (e) { /* keep placeholder wave */ }
         }
-        let raf, lastDraw = 0; const tick = () => { abCheck(); dspTick(); const now = performance.now(); if (now - lastDraw >= 32) { lastDraw = now; drawWave(); } if (!audio.paused) raf = requestAnimationFrame(tick); };
+        let raf, lastDraw = 0; const tick = () => { abCheck(); dspTick(); const now = performance.now(); if (now - lastDraw >= (window.__lite ? 66 : 32)) { lastDraw = now; drawWave(); } if (!audio.paused) raf = requestAnimationFrame(tick); };
         audio.addEventListener('play', () => { cancelAnimationFrame(raf); tick(); });
         ['pause', 'seeked', 'timeupdate', 'durationchange'].forEach(ev => audio.addEventListener(ev, drawWave));
         audio.addEventListener('loadedmetadata', () => { refreshInfo(); drawWave(); });
@@ -1036,8 +1385,8 @@
         wave.addEventListener('pointercancel', () => { seeking = false; seekPrev = null; drawWave(); });
 
         const skip = d => { if (audio.duration > 0) audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + d)); };
-        document.getElementById('btn-rewind').addEventListener('click', () => skip(-10));
-        document.getElementById('btn-ffwd').addEventListener('click', () => skip(10));
+        document.getElementById('btn-rewind').addEventListener('click', () => skip(-SET.skipSec));
+        document.getElementById('btn-ffwd').addEventListener('click', () => skip(SET.skipSec));
 
         // ----- Cover art for every track (ID3 in AIFF 'ID3 ' chunk, FLAC/MP3 via jsmediatags) -----
         const cleanTitle = t => (t || '').replace(/^(?:\d{1,3}\s*[._)\-]+\s*|0\d\s+)+/, '').trim();
@@ -1083,7 +1432,7 @@
         const audioDuration = f => new Promise(res => {
             const a = new Audio(), u = URL.createObjectURL(f); let done = false;
             const fin = d => { if (done) return; done = true; URL.revokeObjectURL(u); a.removeAttribute('src'); res(d); };
-            a.preload = 'metadata'; a.onloadedmetadata = () => fin(isFinite(a.duration) ? a.duration : 0); a.onerror = () => fin(0); setTimeout(() => fin(0), 8000); a.src = u;
+            a.preload = 'metadata'; a.onloadedmetadata = () => fin(isFinite(a.duration) ? a.duration : 0); a.onerror = () => fin(0); setTimeout(() => fin(0), window.AthanaNative ? 3000 : 8000); a.src = u;
         });
         async function readInfo(track) {
             if (track.info) return track.info;
@@ -1189,11 +1538,11 @@
         });
         document.addEventListener('click', () => menu.classList.add('hidden'));
         menu.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (!b) return; labMenuAct(b.dataset.act) ? 0 : b.dataset.act === 'add' ? document.getElementById('btn-add-modal').click() : 0; });
-        let sleepT = null, sleepI = 0; const sleepOpts = [0, 15, 30, 60], sleepLbl = document.getElementById('sleep-label');
+        let sleepT = null, sleepI = 0, stopAfter = false; const sleepOpts = [0, 15, 30, 60], sleepLbl = document.getElementById('sleep-label');
         document.getElementById('btn-sleep').addEventListener('click', () => {
-            sleepI = (sleepI + 1) % sleepOpts.length; clearTimeout(sleepT); const m = sleepOpts[sleepI];
+            stopAfter = false; sleepI = (sleepI + 1) % sleepOpts.length; clearTimeout(sleepT); const m = sleepOpts[sleepI];
             sleepLbl.textContent = m ? m + 'm' : ''; showToast(m ? `Sleep timer: ${m} min` : 'Sleep timer off');
-            if (m) sleepT = setTimeout(() => { audio.pause(); isPlaying = false; updatePlayPauseButton(); sleepI = 0; sleepLbl.textContent = ''; }, m * 60000);
+            if (m) sleepT = setTimeout(() => { sleepI = 0; if (SET.sleepFinish && !audio.paused) { stopAfter = true; sleepLbl.textContent = '\u2026'; showToast('Sleep timer: stopping after this song'); return; } audio.pause(); isPlaying = false; updatePlayPauseButton(); sleepLbl.textContent = ''; }, m * 60000);
         });
         let accent = [150, 130, 255];
         function setAccent(rgb) {
@@ -1244,6 +1593,7 @@
             currentTrackIndex = cur ? 0 : -1;
         }
         function shuffleUI() {
+            if (SET.shuffleSaved !== isShuffle) { SET.shuffleSaved = isShuffle; setSave(); }
             btnShuffle.classList.toggle('text-blue-400', isShuffle); btnShuffle.classList.toggle('text-white/40', !isShuffle);
             document.getElementById('btn-fastshuffle').classList.toggle('on', isShuffle);
             document.getElementById('queue-badge').classList.toggle('hidden', !isShuffle);
@@ -1255,11 +1605,11 @@
             const from = playlist;
             shuffleQueue(from[Math.floor(Math.random() * from.length)]);
             shuffleUI(); renderPlaylist(); upnextTop(); showToast('Shuffled ' + playlist.length + ' songs');
-            await playSpecificTrack(0);
+            playCause = 'shuffle-all'; await playSpecificTrack(0);
         });
 
-        btnRepeat.addEventListener('click', () => {
-            repeatMode = (repeatMode + 1) % 3;
+        btnRepeat.addEventListener('click', () => { repeatMode = (repeatMode + 1) % 3; repeatUI(); SET.repeatSaved = repeatMode; setSave(); });
+        function repeatUI() {
             if (repeatMode === 0) {
                 btnRepeat.classList.add('text-white/40');
                 btnRepeat.classList.remove('text-blue-400');
@@ -1269,9 +1619,12 @@
                 btnRepeat.classList.add('text-blue-400');
                 repeatBadge.classList.add('hidden');
             } else if (repeatMode === 2) {
+                btnRepeat.classList.remove('text-white/40');
+                btnRepeat.classList.add('text-blue-400');
                 repeatBadge.classList.remove('hidden');
             }
-        });
+        }
+        if (SET.remRepeat && SET.repeatSaved) { repeatMode = SET.repeatSaved; repeatUI(); }
 
         const dbName = "AthanaDB";
         let db;
@@ -1568,13 +1921,13 @@
                     (imgs[dirOf(file)] = imgs[dirOf(file)] || []).push(file);
                     const name = file.name.toLowerCase();
                     if (name.includes('cover') || name.includes('folder') || name.includes('front') || name.includes('art')) {
-                        if (!folderArtUrl) folderArtUrl = URL.createObjectURL(file);
+                        if (!folderArtUrl && SET.folderArt) folderArtUrl = URL.createObjectURL(file);
                     }
                     continue;
                 }
 
                 if (file.type.startsWith('audio/') || allowedExtensions.includes(ext)) {
-                    const rawTitle = file.name.replace(/\.[^/.]+$/, ""), title = rawTitle.replace(/^(?:\d{1,3}\s*[._)\-]+\s*|0\d\s+)+/, "") || rawTitle; const ed0 = EDITS[tKey({ fileObj: file })] || {};
+                    const rawTitle = file.name.replace(/\.[^/.]+$/, ""), title = !SET.cleanNum ? rawTitle : rawTitle.replace(/^(?:\d{1,3}\s*[._)\-]+\s*|0\d\s+)+/, "") || rawTitle; const ed0 = EDITS[tKey({ fileObj: file })] || {};
                     playlist.push({
                         ord: ordSeq++, id: 'track_' + Date.now() + '_' + i,
                         title: ed0.t || title,
@@ -1589,7 +1942,7 @@
 
             const pickArt = l => l.find(f => /cover|folder|front|album|art|jacket|scan/i.test(f.name)) || l[0];
             const artFor = f => { let d = dirOf(f); for (;;) { if (imgs[d]) return pickArt(imgs[d]); if (!d) return null; d = d.split('/').slice(0, -1).join('/'); } };
-            for (let k = firstNew; k < playlist.length; k++) playlist[k].artFile = artFor(playlist[k].fileObj);
+            for (let k = firstNew; k < playlist.length; k++) playlist[k].artFile = SET.folderArt ? artFor(playlist[k].fileObj) : null;
 
             if (addedCount > 0) {
                 applySavedCovers(true);
@@ -1597,9 +1950,11 @@
                 renderPlaylist();
                 showToast(`Loaded ${addedCount} tracks successfully.`);
                 if (currentTrackIndex === -1 && playlist.length > 0) {
+                    if (SET.remShuffle && SET.shuffleSaved && !isShuffle) { isShuffle = true; shuffleQueue(); shuffleUI(); renderPlaylist(); }
                     currentTrackIndex = 0;
-                    loadTrack(playlist[currentTrackIndex]);
+                    const firstLoad = loadTrack(playlist[currentTrackIndex]);
                     enableControls();
+                    if (SET.autoplay && (!navigator.userActivation || navigator.userActivation.isActive)) Promise.resolve(firstLoad).then(() => { if (!isPlaying) togglePlay(); });
                 }
                 closeModal();
             } else {
@@ -1607,8 +1962,23 @@
             }
         }
 
+        // In the Android app the web view cannot open folders (it may still claim to, then quietly fail), so the app opens
+        // Android's own folder picker and hands the songs back through the normal file chooser.
+        const nativeFolderPick = () => {
+            const N = window.AthanaNative;
+            if (!N || typeof N.armFolderPick !== 'function') return false;
+            try { N.armFolderPick(); } catch (e) { return false; }
+            window.__natArmed = Date.now(); window.__natFolder = null;
+            inputFiles.click();
+            return true;
+        };
+        if (window.AthanaNative && typeof window.AthanaNative.armFolderPick === 'function') {
+            const hint = document.getElementById('btn-load-folder').previousElementSibling;
+            if (hint) hint.textContent = 'Pick a music folder and Athana adds every song inside it, sub-folders included. Songs you already have are skipped.';
+        }
         const btnLoadFolder = document.getElementById('btn-load-folder');
         btnLoadFolder.addEventListener('click', async () => {
+            if (nativeFolderPick()) return;
             if ('showDirectoryPicker' in window) {
                 try {
                     const handle = await window.showDirectoryPicker();
@@ -1629,7 +1999,8 @@
         });
 
         document.getElementById('btn-add-folder').addEventListener('click', async () => {
-            if (!('showDirectoryPicker' in window)) { inputFolder.click(); return; } // this browser cannot remember folders, but the plain picker still adds songs
+            if (nativeFolderPick()) return;
+            if (!('showDirectoryPicker' in window)) { if (window.AthanaNative) showToast('Tip: touch and hold one song, then choose Select all, to add everything in a folder'); inputFolder.click(); return; } // this browser cannot remember folders, but the plain picker still adds songs
             try {
                 const handle = await window.showDirectoryPicker();
                 for (const h of directoryHandles) { if (await h.isSameEntry(handle)) { showToast('That folder is already in your library'); return; } }
@@ -1647,9 +2018,17 @@
             e.target.value = ''; 
         });
 
-        inputFiles.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) processFiles(e.target.files);
-            e.target.value = ''; 
+        inputFiles.addEventListener('change', async (e) => {
+            let files = Array.from(e.target.files);
+            e.target.value = '';
+            if (window.__natArmed && Date.now() - window.__natArmed < 600000) { // these songs came from the app's folder picker
+                for (let i = 0; i < 20 && !window.__natFolder; i++) await new Promise(r => setTimeout(r, 100)); // the folder map may land a moment after the files
+                const dirs = window.__natFolder || {}; window.__natArmed = 0; window.__natFolder = null;
+                files.forEach(f => { const d = dirs[f.name + '|' + f.size] ?? dirs[f.name]; if (d !== undefined) f._dir = d; });
+                files = freshFiles(files);
+                if (!files.some(f => AUDIO_EXT.test(f.name))) { showToast('No new songs found in that folder'); return; }
+            }
+            if (files.length > 0) processFiles(files);
         });
 
         function deleteTrack(index, event) {
@@ -1692,7 +2071,7 @@
                 const isCurrentlyPlaying = index === currentTrackIndex;
                 
                 li.className = `playlist-item group flex items-center justify-between p-2 rounded-2xl cursor-pointer ${isCurrentlyPlaying ? 'is-active-track' : ''} ${isShuffle && currentTrackIndex >= 0 && index < currentTrackIndex ? 'opacity-40' : ''}`;
-                li.onclick = () => playSpecificTrack(index);
+                li.onclick = () => { playCause = 'tap:queue'; playSpecificTrack(index); };
 
                 const inf = track.info || {}, cov = track.coverUrl || folderArtUrl, nextChip = (currentTrackIndex >= 0 && index === currentTrackIndex + 1) ? '<span class="mr-2 align-middle text-[9px] font-extrabold tracking-wider px-1.5 py-0.5 rounded-full" style="background:rgba(var(--accent),.3);color:rgb(var(--accent-l))">NEXT</span>' : '';
                 const meta = [inf.dur ? formatTime(inf.dur) : '', track.fileObj.name.split('.').pop().toLowerCase(), inf.rate ? +(inf.rate / 1000).toFixed(1) + ' kHz' : '', inf.bits ? inf.bits + ' bit' : ''].filter(Boolean).join(' | ');
@@ -1707,7 +2086,7 @@
                         <div class="flex flex-col overflow-hidden w-full text-left gap-0.5">
                             <span class="text-base md:text-lg font-bold truncate text-white" title="${escapeHtml(track.title)}"><span class="text-white/35 text-sm font-semibold tabular-nums mr-2">${String(index + 1).padStart(2, '0')}</span>${nextChip}${escapeHtml(track.title)}</span>
                             ${(track.edA || inf.artist) ? `<span class="text-[13px] text-white/85 truncate">${escapeHtml(track.edA || inf.artist)}</span>` : ''}
-                            ${meta ? `<span class="text-xs font-semibold text-white/45 truncate"><i class="fas fa-music text-[9px] mr-1.5"></i>${escapeHtml(meta)}</span>` : ''}
+                            ${meta ? `<span class="pl-meta text-xs font-semibold text-white/45 truncate"><i class="fas fa-music text-[9px] mr-1.5"></i>${escapeHtml(meta)}</span>` : ''}
                         </div>
                     </div>
                     <button class="text-white/30 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-2 shrink-0 delete-btn hover:bg-white/10 rounded-full" title="Remove">
@@ -1742,6 +2121,7 @@
 
         async function loadTrack(track) {
             audioErrTries = 0; lastGoodPos = 0; recoverTok++;
+            syncActiveRows();
             showLyricsFor(track);
             trackTitleEl.textContent = track.title;
             trackArtistEl.textContent = track.edA || track.fileObj.name; 
@@ -1796,7 +2176,7 @@
             const oldSrc = audio.src; // revoked only after the new file is attached (an AIFF conversion can take a moment)
 
             const ext = track.fileObj.name.split('.').pop().toLowerCase();
-            if ((ext === 'aiff' || ext === 'aif') && !track.wavBlob) {
+            if ((ext === 'aiff' || ext === 'aif') && !track.wavBlob && !audio.isNative) {   // in the Android app the player reads AIFF itself
                 try {
                     track.wavBlob = await convertAiffToWav(track.fileObj);
                     track.url = URL.createObjectURL(track.wavBlob);
@@ -1819,6 +2199,8 @@
 
         async function playSpecificTrack(index) {
             const wanted = playlist[index];
+            try { diagPush(DIAG.plays, [diagTime(), playCause || 'other', index, wanted && wanted.title, 'left ' + (+(audio.currentTime || 0)).toFixed(1) + '/' + (+(audio.duration || 0)).toFixed(1) + 's']); } catch (e) { }
+            playCause = '';
             currentTrackIndex = index;
             await loadTrack(wanted);
             
@@ -1843,6 +2225,11 @@
         const timeCurrentEl = document.getElementById('time-current');
         const timeTotalEl = document.getElementById('time-total');
 
+        let fadeTok = 0;
+        function fadeAudio(to, ms) { // ramps the player volume; resolves true when it finished, false if something else took over
+            const tok = ++fadeTok, from = audio.volume, t0 = performance.now();
+            return new Promise(res => { const iv = setInterval(() => { if (tok !== fadeTok) { clearInterval(iv); return res(false); } const k = Math.min(1, (performance.now() - t0) / ms); audio.volume = Math.max(0, Math.min(1, from + (to - from) * k)); if (k >= 1) { clearInterval(iv); res(true); } }, 30); });
+        }
         async function togglePlay() {
             if (currentTrackIndex === -1 && playlist.length > 0) {
                 currentTrackIndex = 0;
@@ -1851,11 +2238,15 @@
             if (!audio.src) return;
 
             if (isPlaying) {
-                audio.pause();
                 isPlaying = false;
                 updatePlayPauseButton();
+                if (SET.fadeMs > 0 && !window.__bp && vol > 0 && !audio.paused) fadeAudio(0, SET.fadeMs).then(ok => { if (ok) { audio.pause(); audio.volume = vol / 100; } });
+                else audio.pause();
             } else {
+                const fading = SET.fadeMs > 0 && !window.__bp && vol > 0;
+                if (fading) { fadeTok++; audio.volume = 0; }
                 const playPromise = audio.play();
+                if (fading) fadeAudio(vol / 100, SET.fadeMs);
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
                         isPlaying = true;
@@ -1883,7 +2274,7 @@
 
         async function playPrev() {
             if (playlist.length === 0) return;
-            if (audio.currentTime > 3) {
+            if (SET.prevRestart > 0 && audio.currentTime > SET.prevRestart) {
                 audio.currentTime = 0;
                 return;
             }
@@ -1952,6 +2343,7 @@
             if (!audio.getAttribute('src')) return;                                    // the source was just cleared
             if (name === 'NotAllowedError') { isPlaying = false; updatePlayPauseButton(); showToast('Tap play to start'); return; }
             const t = playlist[currentTrackIndex], midSong = lastGoodPos > 0.5 || audio.currentTime > 0.5;
+            try { diagPush(DIAG.errs, [diagTime(), name || '', err ? err.code + ' ' + (err.message || '') : '', t && t.title, (+audio.currentTime || 0).toFixed(1) + 's']); } catch (x) { }
             if (t && audioErrTries < 2 && (midSong || (err && err.code === 2))) {      // stopped mid-song (a seek or decode hiccup): reopen the file and continue from there
                 audioErrTries++; const tok = ++recoverTok, resume = isPlaying || !audio.paused, pos = Math.max(audio.currentTime || 0, lastGoodPos || 0) + (audioErrTries > 1 ? 2 : 0), old = audio.src;
                 try { t.url = URL.createObjectURL(t.wavBlob || t.fileObj); } catch (x) { t.url = null; }
@@ -1973,12 +2365,14 @@
                 const progress = (audio.currentTime / audio.duration) * 100;
                 progressBar.value = progress;
                 timeCurrentEl.textContent = formatTime(audio.currentTime);
-                timeTotalEl.textContent = formatTime(audio.duration);
+                timeTotalEl.textContent = SET.remain ? '-' + formatTime(Math.max(0, audio.duration - audio.currentTime)) : formatTime(audio.duration);
                 progressBar.style.background = `linear-gradient(to right, #fff ${progress}%, rgba(255,255,255,0.2) ${progress}%)`;
             }
         });
 
         audio.addEventListener('ended', () => {
+            playCause = 'auto:track-ended';
+            if (stopAfter) { stopAfter = false; sleepLbl.textContent = ''; isPlaying = false; updatePlayPauseButton(); showToast('Sleep timer: stopped after the song'); return; }
             if (repeatMode === 2) { // Repeat one
                 audio.currentTime = 0;
                 audio.play();
@@ -1996,8 +2390,8 @@
         audio.addEventListener('error', handleAudioError);
 
         btnPlayPause.addEventListener('click', togglePlay);
-        btnNext.addEventListener('click', playNext);
-        btnPrev.addEventListener('click', playPrev);
+        btnNext.addEventListener('click', () => { if (!playCause) playCause = 'button:next'; playNext(); });
+        btnPrev.addEventListener('click', () => { if (!playCause) playCause = 'button:previous'; playPrev(); });
 
         progressBar.addEventListener('input', (e) => {
             const progressVal = e.target.value;
@@ -2045,7 +2439,7 @@
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { const r = document.getElementById('row-calm'); if (r) r.insertAdjacentHTML('afterend', '<p class="text-xs text-white/45 leading-relaxed -mt-1 mb-3 px-1">Your system has animations turned off, so Athana keeps its motion minimal. To turn them back on in Windows: Settings, Accessibility, Visual effects, Animation effects.</p>'); }
         function setVol(v) {
             if (window.__bp) v = 100; // bit-perfect mode: volume stays at unity gain
-            vol = Math.round(Math.min(100, Math.max(0, v))); volumeBar.value = vol; audio.volume = vol / 100;
+            fadeTok++; vol = Math.round(Math.min(100, Math.max(0, v))); volumeBar.value = vol; audio.volume = vol / 100;
             muteIcon.className = 'fas text-sm fa-volume-' + (vol === 0 ? 'xmark' : vol < 40 ? 'low' : 'high');
             volPct.textContent = vol + '%'; volTip.textContent = vol; volTip.style.left = `calc(${vol}% + ${(2 - 0.04 * vol).toFixed(2)}px)`;
             volCard.classList.toggle('muted', vol === 0); try { localStorage.setItem('athana_vol', vol); } catch (e) { }
@@ -2142,19 +2536,38 @@
                 else { title = def[1]; html = lib.gs.map(([k, ts], i) => `<button class="lib-row" data-g="${i}">${thumbOf(ts)}<span class="min-w-0 flex-1"><span class="block truncate font-bold">${escapeHtml(lib.cat === 'folders' ? k.split('/').pop() : k)}</span><span class="block truncate text-xs text-white/50">${ts.length} song${ts.length > 1 ? 's' : ''}${lib.cat === 'folders' && k.includes('/') ? ' \u00b7 ' + escapeHtml(k) : ''}</span></span><i class="fas fa-chevron-right text-xs text-white/30"></i></button>`).join(''); }
             }
             libBody.innerHTML = html; document.getElementById('lib-title').textContent = title; libBack.classList.toggle('hidden', !back || !!q);
-            const left = playlist.filter(t => !t.meta).length; document.getElementById('lib-status').textContent = left ? `Reading tags ${playlist.length - left}/${playlist.length}` : '';
+            libStatus();
         }
+        function libStatus() { const left = playlist.filter(t => !t.meta).length; document.getElementById('lib-status').textContent = left ? `Reading tags ${playlist.length - left}/${playlist.length}` : ''; }
         let libScan = false;
         async function libScanTags() {
             if (libScan) return; libScan = true; const todo = playlist.filter(t => !t.meta); let n = 0;
-            const worker = async () => { while (todo.length) { await readMeta(todo.shift()); if (++n % 10 === 0) libRefreshSoon(); } };
-            await Promise.all([worker(), worker(), worker()]); libScan = false; if (shareCovers()) renderPlaylist(); libRefresh(); if (playlist.some(t => !t.meta)) libScanTags();
+            const worker = async () => { while (todo.length) { await readMeta(todo.shift()); n++; if (n % 5 === 0) libStatus(); if (n % 40 === 0) libRefreshSoon(); } }; // the counter moves often, the list is rebuilt rarely
+            await Promise.all(window.AthanaNative ? [worker(), worker()] : [worker(), worker(), worker()]);   // phones: less background work libScan = false; if (shareCovers()) renderPlaylist(); libRefresh(); if (playlist.some(t => !t.meta)) libScanTags();
         }
-        function libRefresh() { if (!libTab.classList.contains('hidden')) libRender(); ovRefresh(); msUpdate(); }
+        // Rebuilding the list while a finger is on it makes it jerk and can land a tap on the wrong row, so background refreshes wait.
+        let libTouch = false, libLast = 0, libWait = 0;
+        ['touchstart', 'pointerdown'].forEach(ev => libTab.addEventListener(ev, () => { libTouch = true; libLast = Date.now(); }, { passive: true }));
+        ['touchend', 'touchcancel', 'pointerup', 'pointercancel'].forEach(ev => libTab.addEventListener(ev, () => { libTouch = false; libLast = Date.now(); }, { passive: true }));
+        libTab.addEventListener('scroll', () => { libLast = Date.now(); }, { passive: true });
+        function libRefresh() {
+            if (!libTab.classList.contains('hidden')) {
+                if ((libTouch && Date.now() - libLast < 5000) || Date.now() - libLast < 600) { if (!libWait) libWait = setTimeout(() => { libWait = 0; libRefresh(); }, 400); ovRefresh(); msUpdate(); return; }
+                libRender();
+            }
+            ovRefresh(); msUpdate();
+        }
+        // The song that is playing is marked at once (no rebuild): the list used to catch up only on its next refresh.
+        function syncActiveRows() {
+            try {
+                const cur = playlist[currentTrackIndex];
+                [libBody, ovBody].forEach(box => { if (box) box.querySelectorAll('.lib-row[data-t]').forEach(r => r.classList.toggle('is-active-track', playlist[+r.dataset.t] === cur)); });
+            } catch (e) { }
+        }
         let lrT = 0; function libRefreshSoon() { if (lrT) return; lrT = setTimeout(() => { lrT = 0; libRefresh(); }, 1000); }
         libBody.addEventListener('click', e => {
             const b = e.target.closest('[data-cat],[data-g],[data-t]'); if (!b) return;
-            if (b.dataset.t != null) { playSpecificTrack(+b.dataset.t); return; }
+            if (b.dataset.t != null) { playCause = 'tap:library'; playSpecificTrack(+b.dataset.t); return; }
             if (b.dataset.g != null) lib.group = lib.gs[+b.dataset.g][0];
             else if (b.dataset.cat === 'queue') { document.querySelector('[data-target="tab-upnext"]').click(); return; }
             else { lib.cat = b.dataset.cat; lib.group = null; }
@@ -2215,7 +2628,7 @@
             ovBody.querySelectorAll('.ov-list > *').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 16)));
             ovDecorate(v);
             ovBack.classList.toggle('hidden', ovStack.length < 2); ovBar.classList.toggle('hidden', v.t !== 'search');
-            document.getElementById('ov-nav-home').classList.toggle('on', v.t !== 'search'); document.getElementById('ov-nav-search').classList.toggle('on', v.t === 'search');
+            document.getElementById('ov-nav-home').classList.toggle('on', v.t !== 'search'); document.getElementById('ov-nav-search').classList.toggle('on', v.t === 'search'); if (window.__navSync) window.__navSync();
             const left = playlist.filter(t => !t.meta).length; document.getElementById('ov-status').textContent = left ? `Reading tags ${playlist.length - left}/${playlist.length}` : '';
         }
         function ovMini() {
@@ -2229,12 +2642,12 @@
         }
         const ovOpen = open => { ovEl.classList.toggle('hidden', !open); if (open) { ovSig = ''; ovRender(); ovMini(); libScanTags(); } };
         function ovRefresh() { if (window.__ovReady && !ovEl.classList.contains('hidden')) { ovRender(); ovMini(); } }
-        const ovGoQueue = () => { ovOpen(false); document.querySelector('[data-target="tab-upnext"]').click(); document.querySelector('main > section:last-child').scrollIntoView({ behavior: 'smooth' }); };
+        const ovGoQueue = () => { ovOpen(false); document.querySelector('[data-target="tab-upnext"]').click(); sheetOpen(true); if (!isPhone()) document.querySelector('main > section:last-child').scrollIntoView({ behavior: 'smooth' }); };
         ovBody.addEventListener('click', e => {
             if (ovPre(e)) return;
             const a = e.target.closest('[data-act]'); if (a) { const k = a.dataset.act; if (k === 'restore') restorePreviousSession(); else if (k === 'refresh') refreshLibrary(); else if (k === 'add') document.getElementById('btn-add-modal').click(); else if (k === 'shuffleall') { document.getElementById('btn-fastshuffle').click(); ovOpen(false); } else if (ovAct(k)) { } else if (k === 'playall' && playlist.length) { isShuffle = false; btnShuffle.classList.remove('text-blue-400'); btnShuffle.classList.add('text-white/40'); playSpecificTrack(0); ovOpen(false); } return; }
             const b = e.target.closest('[data-cat],[data-g],[data-t]'); if (!b) return;
-            if (b.dataset.t != null) { playSpecificTrack(+b.dataset.t); return; }
+            if (b.dataset.t != null) { playCause = 'tap:library-full'; playSpecificTrack(+b.dataset.t); return; }
             if (b.dataset.g != null) { const cat = ovStack[ovStack.length - 1].cat, k = groupsOf(cat)[+b.dataset.g][0]; ovStack.push({ t: 'tracks', grp: cat, title: ovName(cat, k), list: () => (groupsOf(cat).find(g => g[0] === k) || [0, []])[1] }); }
             else {
                 const id = b.dataset.cat, ex = ovExtra.find(x => x[0] === id);
@@ -2279,14 +2692,14 @@
             probeFormat(t);
             const x = fmtOf(t), ext = t.fileObj.name.split('.').pop().toLowerCase(), isAiff = /^aif/.test(ext), wi = t.wavBlob && t.wavBlob.info, br = spBrowser();
             const enc = x.enc || (isAiff && wi && wi.text ? wi.text.split(' ').pop() : ''), codec = /^PCM_/i.test(enc) ? enc.charAt(0).toUpperCase() + enc.slice(1).toLowerCase() : (enc || x.codec);
-            const out = spCtx ? spCtx.sampleRate : 0, vol = Math.round(audio.volume * 100), lat = spCtx ? ((spCtx.baseLatency || 0) + (spCtx.outputLatency || 0)) : 0;
+            const out = audio.isNative ? (audio.outHz || 0) : (spCtx ? spCtx.sampleRate : 0), vol = Math.round(audio.volume * 100), lat = spCtx ? ((spCtx.baseLatency || 0) + (spCtx.outputLatency || 0)) : 0;
             const track = spLine(escapeHtml([codec, x.bits ? x.bits + ' bit' : '', x.hz ? spKhz(x.hz) : '', x.kbps ? (x.approx ? '~' : '') + x.kbps + ' kbps' : ''].filter(Boolean).join(' ')))
                 + spLine(x.ch ? (x.ch === 1 ? 'Mono' : x.ch + ' Channels') : '') + spLine(x.vbr == null ? '' : x.vbr ? 'Variable bitrate' : 'Constant bitrate')
                 + spSub((x.lossless === null ? 'Format' : x.lossless ? 'Lossless' : 'Lossy') + (x.size ? ' \u00b7 ' + (x.size / 1048576).toFixed(1) + ' MB' : ''));
-            const dec = isAiff ? spLine('Athana AIFF converter (in memory)') + spLine(`Browser PCM decoder (${br})`) : spLine(`Browser built-in decoder (${br})`);
-            const rs = !x.hz || !out ? spLine('Handled by the browser') : x.hz === out ? spLine('Not needed') + spLine(spKhz(x.hz) + ' \u00b7 native rate') : spLine('Browser resampler') + spLine(`${spKhz(x.hz)} \u2192 ${spKhz(out)}`) + spSub('Resampled to your device output rate');
+            const dec = audio.isNative ? (isAiff ? spLine('Android AIFF reader (streams PCM, no copy)') : '') + spLine('Android native decoder (Media3 ExoPlayer)') + (audio.nativeCodec ? spSub(escapeHtml(audio.nativeCodec)) : '') : isAiff ? spLine('Athana AIFF converter (in memory)') + spLine(`Browser PCM decoder (${br})`) : spLine(`Browser built-in decoder (${br})`);
+            const rs = !x.hz || !out ? spLine(audio.isNative ? 'Handled by Android' : 'Handled by the browser') : x.hz === out ? spLine('Not needed') + spLine(spKhz(x.hz) + ' \u00b7 native rate') : spLine(audio.isNative ? 'Android audio mixer' : 'Browser resampler') + spLine(`${spKhz(x.hz)} \u2192 ${spKhz(out)}`) + spSub('Resampled to your device output rate');
             const dsp = spLine('Float32 mixing' + (out ? ' \u00b7 ' + spKhz(out) : '')) + spSub('Volume') + spLine(audio.muted || !vol ? 'Muted' : vol + '%' + (vol === 100 ? ' (unity gain)' : ' (software volume)')) + spSub('Effects') + spLine('None \u2014 EQ and normalisation are off');
-            const outp = spLine('Web Audio / HTML5 Audio') + spLine('Float32' + (out ? ' \u2192 device mixer \u00b7 ' + spKhz(out) : '')) + (lat ? spSub('Latency') + spLine(Math.round(lat * 1000) + ' ms') : '');
+            const outp = spLine(audio.isNative ? 'Android AudioTrack (Media3 ExoPlayer)' : 'Web Audio / HTML5 Audio') + spLine('Float32' + (out ? ' \u2192 device mixer \u00b7 ' + spKhz(out) : '')) + (lat ? spSub('Latency') + spLine(Math.round(lat * 1000) + ' ms') : '');
             const dev = await spDevice();
             spBody.innerHTML = bpCard(t) + spSec(`<span class="sp-badge">${escapeHtml(x.codec)}</span>`, 'Track', track) + spSec('<span class="sp-dec"></span>', 'Decoder', dec)
                 + spSec('<span class="text-[11px] font-extrabold tracking-tight">SRC</span>', 'Resampler', rs) + spSec('<i class="fas fa-wave-square"></i>', 'DSP', dsp)
@@ -2347,8 +2760,9 @@
         audio.addEventListener('loadedmetadata', () => { if (!spModal.classList.contains('hidden')) renderSignalPath(); });
 
         // ===== Changelog: "What's new" popup, shown once per version =====
-        const APP_VERSION = 35;
+        const APP_VERSION = 36;
         const CHANGELOG = [
+            { v: 36, t: 'Many more settings', i: ["Settings now has Playback, Display, Controls, Privacy & online and Backup & data pages, plus a shortcut to Sound & effects", "Playback: choose how far the skip buttons jump, when Previous restarts a song, fade on pause and resume, start playing after adding songs, remember repeat and shuffle, let the sleep timer finish the song, and when a play is counted", "Display: text size, compact song lists, hide covers or format details, time remaining, and keep the title visible over the cover", "Lyrics: translate into 18 languages, text size, centered or left alignment, and a switch for the blur on lines that are not playing", "Controls: keyboard shortcuts on or off (new: Space, arrows, N, P, S, R), swipe or double-tap the cover, vibrate on tap, keep the screen on while playing", "Privacy: Offline mode and a switch for each online service (lyrics, covers, translation, update check), and a button to remove your API key", "Backup: save, copy and restore your settings, playlists, edits and play counts, see how much space Athana uses, and clear saved lyrics, covers or history"] },
             { v: 35, t: 'Better on phones', i: ["Search now lists every song in your library before you type, then narrows as you search", "Fixed the layout on Android Chrome: the library, song lists and bottom bar no longer get cut off at the right edge", "Phone tweaks: safe-area padding for notches and gesture bars, faster taps, no pull-to-refresh bounce, and lighter blur and paused animations on small screens or when the app is in the background"] },
             { v: 34, t: 'Refresh Library', i: ["Added new songs to one of your music folders? Tap Refresh library next to Shuffle all and Play all (or in the Add media panel) and they appear without reloading the page", "Your music keeps playing: new songs are added to the end of the queue, and the current song, its position and the play order are not touched"] },
             { v: 33, t: 'Multiple music folders', i: ["New Add Another Folder button in the Add media panel keeps your current library and adds a second folder, for example one on another drive", "Athana remembers every folder, so Restore brings them all back after a reload. Each remembered folder is listed with a Forget button. Select Folder still replaces the library with a single folder"] },
@@ -2479,7 +2893,7 @@
         audio.addEventListener('loadstart', () => { countedFor = null; });
         audio.addEventListener('timeupdate', () => {
             const t = playlist[currentTrackIndex]; if (!t || countedFor === t || !(audio.duration > 0)) return;
-            if (audio.currentTime >= Math.min(30, audio.duration * 0.5)) { countedFor = t; const s = stats[tKey(t)] || (stats[tKey(t)] = { n: 0 }); s.n++; s.last = Date.now(); lsSet('athana_stats', stats); }
+            if (audio.currentTime >= (SET.countAt > 600 ? audio.duration * 0.92 : Math.min(SET.countAt, audio.duration * 0.5))) { countedFor = t; const s = stats[tKey(t)] || (stats[tKey(t)] = { n: 0 }); s.n++; s.last = Date.now(); lsSet('athana_stats', stats); }
         });
 
         // ---- playlists ----
@@ -2492,7 +2906,7 @@
             ['most_played', 'Most Played', 'fa-fire', '#ff7a45', () => playlist.filter(t => sOf(t).n).sort((a, b) => sOf(b).n - sOf(a).n).slice(0, 25)]);
         function playTracks(list, shuf) {
             if (!list.length) return; const first = shuf ? shuffleArr(list.slice()) : list.slice();
-            playlist = [...first, ...playlist.filter(t => !first.includes(t))]; isShuffle = !!shuf; shuffleUI(); renderPlaylist(); playSpecificTrack(0);
+            playlist = [...first, ...playlist.filter(t => !first.includes(t))]; isShuffle = !!shuf; shuffleUI(); renderPlaylist(); playCause = 'play-group'; playSpecificTrack(0);
         }
         const ovActs = g => '<div class="flex flex-wrap gap-3 mb-4"><button class="ov-cta" data-act="plist"><i class="fas fa-play"></i>Play</button><button class="ov-cta ghost" data-act="pshuf"><i class="fas fa-shuffle"></i>Shuffle</button>' + (['albums', 'artists', 'albumartists'].includes(g) ? '<button class="ov-cta ghost" data-act="gedit"><i class="fas fa-pen"></i>Edit artist</button>' : '') + '</div>';
         function ovDecorate(v) {
@@ -2544,9 +2958,9 @@
         if ('mediaSession' in navigator) {
             const ms = navigator.mediaSession, h = (a, f) => { try { ms.setActionHandler(a, f); } catch (e) { } };
             h('play', () => audio.play().catch(() => { })); h('pause', () => audio.pause());
-            h('previoustrack', () => $('btn-prev').click()); h('nexttrack', () => $('btn-next').click());
-            h('seekbackward', d => { audio.currentTime = Math.max(0, audio.currentTime - ((d && d.seekOffset) || 10)); });
-            h('seekforward', d => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + ((d && d.seekOffset) || 10)); });
+            h('previoustrack', () => { playCause = 'mediasession:previous'; $('btn-prev').click(); }); h('nexttrack', () => { playCause = 'mediasession:next'; $('btn-next').click(); });
+            h('seekbackward', d => { audio.currentTime = Math.max(0, audio.currentTime - ((d && d.seekOffset) || SET.skipSec)); });
+            h('seekforward', d => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + ((d && d.seekOffset) || SET.skipSec)); });
             h('seekto', d => { audio.currentTime = d.seekTime; });
             audio.addEventListener('play', () => { ms.playbackState = 'playing'; msUpdate(); }); audio.addEventListener('pause', () => { ms.playbackState = 'paused'; });
             let msPos = 0; audio.addEventListener('timeupdate', () => { if (Date.now() - msPos < 1000 || !(audio.duration > 0)) return; msPos = Date.now(); try { ms.setPositionState({ duration: audio.duration, playbackRate: audio.playbackRate || 1, position: Math.min(audio.currentTime, audio.duration) }); } catch (e) { } });
@@ -2580,6 +2994,7 @@
         let lrcAuto = !!dspSet.lrcAuto;
         const dspSave = () => lsSet('athana_dsp', dspSet);
         function dspEnsure() {
+            if (audio.isNative) return false;
             if (dsp.ctx) { if (dsp.ctx.state === 'suspended') dsp.ctx.resume(); return true; }
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'playback' }); dsp.ctx = ctx; dsp.src = ctx.createMediaElementSource(audio);
@@ -2588,7 +3003,7 @@
                 window.__dsp = true; audio.addEventListener('play', () => { if (ctx.state === 'suspended') ctx.resume(); }); ctx.resume(); refreshInfo(); return true;
             } catch (e) { dsp.ctx = null; showToast('The effects engine is not available in this browser.'); return false; }
         }
-        function dspNeeded() { if (window.__bp) { setBP(false); showToast('Bit-perfect mode turned off'); } return dspEnsure(); }
+        function dspNeeded() { if (audio.isNative) { showToast('EQ and effects are not available in the Android app yet.'); return false; } if (window.__bp) { setBP(false); showToast('Bit-perfect mode turned off'); } return dspEnsure(); }
         let anStore = lsGet('athana_an', {});
         const anOf = t => anStore[tKey(t)];
         function rgGain() {
@@ -2805,7 +3220,8 @@
         }
         function lyrStatus(x) { const el = $('lyr-status'); if (el) el.textContent = x || ''; }
         async function findLyricsOnline(t, quiet, custom) {
-            if (!t) return; const m = t.meta || {}, dur = Math.round((t.info && t.info.dur) || 0);
+            if (!t) return; if (netBlocked('lrclib.net')) { if (!quiet) showToast('Online lyrics search is turned off in Settings \u2192 Privacy & online.'); return; }
+            const m = t.meta || {}, dur = Math.round((t.info && t.info.dur) || 0);
             const artists = [artistOf(t), m.albumArtist].filter((a, i, arr) => !lrcBadArtist(a) && arr.indexOf(a) === i);
             const titles = [t.title, lrcClean(t.title)].filter((x, i, a) => x && a.indexOf(x) === i), tn = lrcNorm(t.title), tcn = lrcNorm(lrcClean(t.title));
             const score = r => { // how well an online result matches this song (the title must match, the artist tag is only a bonus)
@@ -2864,6 +3280,7 @@
         document.addEventListener('keydown', e => { if (e.key === 'Escape' && !lyrModal.classList.contains('hidden')) { e.stopImmediatePropagation(); lyrModal.classList.add('hidden'); } }, true);
         async function findCoversOnline() {
             const st = $('cov-st'), miss = new Map();
+            if (netBlocked('musicbrainz.org')) { st.textContent = 'Online cover search is turned off in Settings \u2192 Privacy & online.'; return; }
             playlist.forEach(t => { if (t.coverUrl) return; const m = t.meta || {}, al = m.album, ar = m.albumArtist || artistOf(t); if (!al || ar === 'Unknown artist') return; const k = al + '|' + ar; if (!miss.has(k)) miss.set(k, []); miss.get(k).push(t); });
             if (!miss.size) { st.textContent = 'Every album with tags already has a cover.'; return; }
             let n = 0, ok = 0; $('cov-run').disabled = true;
@@ -2894,7 +3311,7 @@
         // ===== Idle: the title and artist fade away over the cover while a song plays; tap the cover to bring them back =====
         (() => {
             const art = document.getElementById('album-art'), IDLE = 4000; let timer = 0, last = 0;
-            const arm = () => { clearTimeout(timer); if (!audio.paused) timer = setTimeout(() => { if (!audio.paused) art.classList.add('info-hidden'); }, IDLE); };
+            const arm = () => { clearTimeout(timer); if (!audio.paused && SET.idleHide) timer = setTimeout(() => { if (!audio.paused) art.classList.add('info-hidden'); }, IDLE); };
             const show = () => { art.classList.remove('info-hidden'); arm(); };
             const bump = () => { const n = performance.now(); if (n - last > 250) { last = n; arm(); } }; // any activity on the page delays hiding
             ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(e => document.addEventListener(e, bump, { passive: true }));
@@ -2915,6 +3332,7 @@
             };
             const baseP = sig(); let dismissed = null, last = 0;
             async function check(manual) {
+                if (SET.offline || (!manual && !SET.netUpdates)) { if (manual) hint.textContent = 'Offline mode is on. Turn it off in Privacy & online to check.'; return; }
                 last = Date.now(); if (manual) hint.textContent = 'Checking\u2026';
                 const [base, now] = [await baseP, await sig()];
                 if (!now || !base) { if (manual) hint.textContent = 'Could not check for updates right now.'; return; }
@@ -2934,7 +3352,7 @@
         (() => {
             // The manifest and icons are real files now (manifest.webmanifest and the icon PNG files), linked from <head>.
             // The service worker caches the app so it opens offline; browsers only allow it on https / localhost.
-            if ('serviceWorker' in navigator && location.protocol !== 'file:') addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(e => console.warn('Offline support is off:', e.message)); });
+            if ('serviceWorker' in navigator && location.protocol !== 'file:' && !window.AthanaNative) addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(e => console.warn('Offline support is off:', e.message)); });
             let deferred = null; const btn = $('app-inst-btn'), hint = $('app-inst-hint');
             const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
             const refresh = () => { btn.classList.toggle('hidden', !deferred); hint.textContent = standalone() ? 'Running as an installed app, so media controls show \u201cAthana\u201d.' : deferred ? 'Install Athana so media controls show \u201cAthana\u201d instead of the browser name.' : location.protocol === 'file:' ? 'Open Athana from a web address (https) to install it as an app.' : 'Use your browser\u2019s \u201cInstall app\u201d option to get the Athana name in media controls.'; };
@@ -2981,20 +3399,198 @@
         const saveUI = () => { try { localStorage.setItem('athana_ui', JSON.stringify(ui)); } catch (e) { } applyUI(); };
         const coverSrc = () => albumCoverImg.classList.contains('hidden') ? null : albumCoverImg.src;
         const toggleFocus = () => { ui.focus = !ui.focus; saveUI(); showToast(ui.focus ? 'Focus mode on \u2014 press F to exit' : 'Focus mode off'); };
-        const openUI = on => { uiPanel.classList.toggle('open', on); uiBack.classList.toggle('hidden', !on); uiPanel.setAttribute('aria-hidden', String(!on)); if (on) applyUI(); };
+        const openUI = on => { uiPanel.classList.toggle('open', on); uiBack.classList.toggle('hidden', !on); uiPanel.setAttribute('aria-hidden', String(!on)); if (on) { applyUI(); if (window.__settingsHome) window.__settingsHome(); } if (window.__navSync) window.__navSync(); };
+        window.__openSettings = openUI;
+        // On a phone Settings is a page of its own above the tab bar (Library, Playing, Search, Queue, Settings), not a hidden menu entry.
+        window.__navSync = () => {
+            const open = uiPanel.classList.contains('open'), nav = document.querySelector('.ov-nav'), btn = document.getElementById('ov-nav-settings');
+            uiPanel.style.setProperty('--navh', (nav && !ovEl.classList.contains('hidden') ? nav.offsetHeight : 0) + 'px');
+            btn.classList.toggle('on', open);
+            if (open) ['ov-nav-home', 'ov-nav-now', 'ov-nav-search', 'ov-nav-queue'].forEach(id => document.getElementById(id).classList.remove('on'));
+            else if (!ovEl.classList.contains('hidden')) { const v = ovStack[ovStack.length - 1] || {}; document.getElementById('ov-nav-home').classList.toggle('on', v.t !== 'search'); document.getElementById('ov-nav-search').classList.toggle('on', v.t === 'search'); }
+        };
+        document.getElementById('ov-nav-settings').addEventListener('click', () => { if (uiPanel.classList.contains('open')) { if (window.__settingsHome) window.__settingsHome(); } else { if (typeof ovEl !== 'undefined' && ovEl.classList.contains('hidden')) ovOpen(true); openUI(true); } });
+        ['ov-nav-home', 'ov-nav-now', 'ov-nav-search', 'ov-nav-queue'].forEach(id => document.getElementById(id).addEventListener('click', () => { if (uiPanel.classList.contains('open')) openUI(false); }, true)); // capture: Settings closes first, then the tab does its job
+        // The phone's Back button: step out of Settings, or close the queue, before the app goes to the background.
+        window.__back = () => {
+            if (uiPanel.classList.contains('open')) { if (!(window.__settingsBack && window.__settingsBack())) openUI(false); return true; }
+            if (sheet.classList.contains('open')) { sheetOpen(false); return true; }
+            return false;
+        };
         swWrap.addEventListener('click', e => { const b = e.target.closest('.ui-sw'); if (!b) return; ui.accent = b.dataset.c === 'auto' ? null : PRESETS[+b.dataset.c][1]; saveUI(); applyAccent(coverSrc()); });
         document.querySelectorAll('[data-bgm]').forEach(b => b.onclick = () => { ui.bg = b.dataset.bgm; saveUI(); });
         glowBar.addEventListener('input', () => { ui.glow = +glowBar.value; saveUI(); });
         document.getElementById('row-focus').onclick = toggleFocus;
         document.getElementById('row-calm').onclick = () => { ui.calm = !ui.calm; saveUI(); };
+        document.getElementById('diag-copy').addEventListener('click', async () => {
+            const txt = ['Athana v' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '?'), 'native=' + !!window.AthanaNative, 'lite=' + !!window.__lite, navigator.userAgent,
+                'songs=' + playlist.length, 'tagsRead=' + playlist.filter(t => t.meta).length, 'shuffle=' + isShuffle, 'repeat=' + repeatMode, 'sort=' + sortMode, 'current=' + currentTrackIndex,
+                '--- songs started (time, why, row, title, left on previous song) ---', ...DIAG.plays.map(r => r.join(' | ')), '--- audio format of each song (time, title, type, codec, sample rate, PCM, device, bitrate) ---', ...DIAG.fmt.map(r => r.join(' | ')), '--- errors ---', ...DIAG.errs.map(r => r.join(' | '))].join('\n');
+            let ok = false; try { await navigator.clipboard.writeText(txt); ok = true; } catch (e) { }
+            if (!ok) { try { const ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;left:-999px;top:0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) { } }
+            showToast(ok ? 'Diagnostics copied' : 'Could not copy');
+        });
+        (() => { const r = document.getElementById('row-lite'), sync = () => setSw('row-lite', !!window.__lite); sync();
+            r.onclick = () => { window.__lite = !window.__lite; document.documentElement.classList.toggle('lite', window.__lite); try { localStorage.setItem('athana_lite', window.__lite ? '1' : '0'); } catch (e) { } sync(); showToast(window.__lite ? 'Performance mode on' : 'Performance mode off'); }; })();
         document.getElementById('ui-reset').onclick = () => { Object.assign(ui, UI_DEF); clearWall(); saveUI(); applyAccent(coverSrc()); };
         document.getElementById('ui-close').onclick = uiBack.onclick = () => openUI(false);
         document.querySelector('[data-ui]').onclick = () => { menu.classList.add('hidden'); openUI(true); };
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') openUI(false);
+            if (e.key === 'Escape') { if (!(uiPanel.classList.contains('open') && window.__settingsBack && window.__settingsBack())) openUI(false); }
             else if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey && !e.target.closest('input,textarea,select,[contenteditable]')) toggleFocus();
         });
         applyUI(); if (ui.accent) setAccent(ui.accent);
+        // ---- Settings hub: categories -> pages, with search ----
+        (() => {
+            const $ = id => document.getElementById(id), panel = $('ui-panel'), hub = $('set-hub'), other = $('set-other'), title = $('set-title'), back = $('set-back'), none = $('set-none');
+            const pages = [...panel.querySelectorAll('.set-page')], items = [...panel.querySelectorAll('.set-item')], sBox = $('set-search'), sIn = $('set-q');
+            let cur = null;
+            const caps = new Map();
+            pages.forEach(pg => { const h = document.createElement('p'); h.className = 'ui-h set-ph hidden'; h.textContent = pg.dataset.title; pg.prepend(h); caps.set(pg, h); });
+            function show(name) {
+                cur = name; sIn.value = ''; sBox.classList.add('hidden'); none.classList.add('hidden');
+                items.forEach(i => i.classList.remove('hidden')); pages.forEach(pg => caps.get(pg).classList.add('hidden'));
+                hub.classList.toggle('hidden', !!name); other.classList.toggle('hidden', !!name);
+                pages.forEach(pg => pg.classList.toggle('hidden', pg.dataset.page !== name));
+                back.classList.toggle('hidden', !name); title.textContent = name ? panel.querySelector('.set-page[data-page="' + name + '"]').dataset.title : 'Settings';
+                panel.scrollTop = 0;
+            }
+            function search() {
+                const q = sIn.value.trim().toLowerCase(); if (!q) { const keep = cur; show(keep); sBox.classList.remove('hidden'); return; }
+                hub.classList.add('hidden'); back.classList.add('hidden'); title.textContent = 'Search'; other.classList.remove('hidden');
+                let any = false;
+                items.forEach(i => { const hit = ((i.dataset.k || '') + ' ' + i.textContent).toLowerCase().includes(q); i.classList.toggle('hidden', !hit); if (hit) any = true; });
+                pages.forEach(pg => { const n = pg.querySelectorAll('.set-item:not(.hidden)').length; pg.classList.toggle('hidden', !n); caps.get(pg).classList.toggle('hidden', !n); });
+                const o = other.querySelectorAll('.set-item:not(.hidden)').length; other.classList.toggle('hidden', !o);
+                none.classList.toggle('hidden', any);
+            }
+            hub.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) show(b.dataset.go); });
+            back.onclick = () => show(null);
+            $('set-search-btn').onclick = () => { if (sBox.classList.contains('hidden')) { sBox.classList.remove('hidden'); sIn.focus(); } else { show(cur); } };
+            sIn.addEventListener('input', search);
+            $('set-add').onclick = () => { window.__openSettings(false); document.getElementById('btn-add-modal').click(); };
+            $('set-new').onclick = () => { window.__openSettings(false); document.getElementById('btn-changelog').click(); };
+            $('set-ver').textContent = 'v' + APP_VERSION + '.0.0';
+            window.__settingsHome = () => show(null);
+            window.__settingsBack = () => { if (!sBox.classList.contains('hidden') || sIn.value) { show(cur); return true; } if (cur) { show(null); return true; } return false; };
+            show(null);
+        })();
+
+        // ---- Settings options: binds the switches, choices and sliders of the pages above to SET ----
+        (() => {
+            const $ = id => document.getElementById(id), panel = $('ui-panel'), R = document.documentElement, art = $('album-art');
+            const MIR = { romaji: [() => lyrRo, () => btnRomaji], trans: [() => lyrTr, () => btnTrans], lrcauto: [() => lrcAuto, () => $('lyr-auto')] };
+            const native = !!window.AthanaNative;
+            // --- apply every option that is a look or a mode ---
+            let wl = null;
+            async function awakeSync() {
+                try {
+                    if (SET.awake && !audio.paused && !document.hidden && navigator.wakeLock) { if (!wl) { wl = await navigator.wakeLock.request('screen'); wl.addEventListener('release', () => { wl = null; }); } }
+                    else if (wl) { const w = wl; wl = null; await w.release(); }
+                } catch (e) { wl = null; }
+            }
+            ['play', 'pause', 'ended', 'emptied'].forEach(ev => audio.addEventListener(ev, awakeSync)); document.addEventListener('visibilitychange', awakeSync);
+            function refreshTotal() { if (audio.duration > 0) timeTotalEl.textContent = SET.remain ? '-' + formatTime(Math.max(0, audio.duration - audio.currentTime)) : formatTime(audio.duration); }
+            function applySet() {
+                R.style.fontSize = SET.uiScale === 100 ? '' : SET.uiScale + '%';
+                R.classList.toggle('dense', SET.listDensity === 'compact'); R.classList.toggle('nolistcov', !SET.listCovers); R.classList.toggle('nolistmeta', !SET.listMeta);
+                R.classList.toggle('lyr-center', SET.lyrAlign === 'center'); R.classList.toggle('lyr-noblur', !SET.lyrBlur);
+                R.style.setProperty('--lyr-s', SET.lyrScale / 100);
+                art.style.touchAction = SET.swipe ? 'pan-y' : '';
+                timeTotalEl.style.cursor = 'pointer'; timeTotalEl.title = 'Tap to switch between total time and time remaining';
+                trLangChanged0(); awakeSync();
+            }
+            const trLangChanged0 = () => { const sel = $('set-trlang'); if (sel) sel.value = SET.trLang; const l = $('trans-lbl'); if (l) l.textContent = TR_LANGS[SET.trLang]; };
+            window.__applySet = applySet;
+            // --- show the current values ---
+            function sync() {
+                panel.querySelectorAll('[data-tog]').forEach(b => { const on = !!SET[b.dataset.tog]; b.querySelector('.sw').classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+                panel.querySelectorAll('[data-mir]').forEach(b => { const on = !!MIR[b.dataset.mir][0](); b.querySelector('.sw').classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+                panel.querySelectorAll('[data-set]').forEach(g => { const cur = String(SET[g.dataset.set]); g.querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === cur)); });
+                panel.querySelectorAll('[data-rng]').forEach(r => { r.value = SET[r.dataset.rng]; r.style.setProperty('--p', (SET[r.dataset.rng] - r.min) / (r.max - r.min) * 100); const n = panel.querySelector('[data-rv="' + r.dataset.rng + '"]'); if (n) n.textContent = SET[r.dataset.rng] + '%'; });
+                $('net-group').classList.toggle('set-dim', SET.offline);
+                $('ai-forget').parentElement.classList.toggle('hidden', !aiKey());
+                const rf = $('set-refresh'); try { rf.parentElement.classList.toggle('hidden', !canRefresh()); } catch (e) { rf.parentElement.classList.add('hidden'); }
+                $('bk-file').classList.toggle('hidden', native);
+                const sel = $('set-trlang'); if (sel) sel.value = SET.trLang;
+            }
+            function change(k, v) {
+                SET[k] = v; setSave(); applySet(); sync();
+                if (k === 'haptic' && v && navigator.vibrate) navigator.vibrate(12);
+                if (k === 'remain') refreshTotal();
+                if (k === 'trLang') trLangChanged();
+                if (k === 'idleHide' && !v) art.classList.remove('info-hidden');
+                if (k === 'offline' && v) showToast('Offline mode on. Athana will not use the internet.');
+            }
+            panel.addEventListener('click', e => {
+                const t = e.target.closest('[data-tog]'); if (t) return change(t.dataset.tog, !SET[t.dataset.tog]);
+                const m = e.target.closest('[data-mir]'); if (m) { MIR[m.dataset.mir][1]().click(); return sync(); }
+                const c = e.target.closest('[data-set] [data-v]'); if (c) { const g = c.parentElement, raw = c.dataset.v; return change(g.dataset.set, g.dataset.type === 'num' ? +raw : raw); }
+            });
+            panel.addEventListener('input', e => { const r = e.target.closest('[data-rng]'); if (r) change(r.dataset.rng, +r.value); });
+            $('set-trlang').addEventListener('change', e => change('trLang', e.target.value));
+            new MutationObserver(() => { if (panel.classList.contains('open')) { sync(); storageInfo(); } }).observe(panel, { attributes: true, attributeFilter: ['class'] });
+            // --- keys, gestures, haptics ---
+            document.addEventListener('keydown', e => { if (!SET.keys && e.key !== 'Escape' && !e.target.closest('input,textarea,select,[contenteditable]')) e.stopImmediatePropagation(); }, true);
+            document.addEventListener('keydown', e => {
+                if (!SET.keys || e.ctrlKey || e.metaKey || e.altKey || e.target.closest('input,textarea,select,[contenteditable]')) return;
+                const k = e.key, onBtn = !!e.target.closest('button,a,summary');
+                if (k === ' ' && !onBtn) { e.preventDefault(); btnPlayPause.click(); }
+                else if (k === 'ArrowRight') { e.preventDefault(); skip(SET.skipSec); } else if (k === 'ArrowLeft') { e.preventDefault(); skip(-SET.skipSec); }
+                else if (k === 'n' || k === 'N') { playCause = 'key:next'; btnNext.click(); } else if (k === 'p' || k === 'P') { playCause = 'key:previous'; btnPrev.click(); }
+                else if (k === 's' || k === 'S') btnShuffle.click(); else if (k === 'r' || k === 'R') btnRepeat.click();
+            });
+            let sid = null, sx = 0, sy = 0, st = 0, lastTap = 0;
+            art.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' || e.target.closest('button,a,input')) { sid = null; return; } sid = e.pointerId; sx = e.clientX; sy = e.clientY; st = Date.now(); });
+            art.addEventListener('pointercancel', () => { sid = null; });
+            art.addEventListener('pointerup', e => {
+                if (e.pointerId !== sid) return; sid = null; const dx = e.clientX - sx, dy = e.clientY - sy, dt = Date.now() - st;
+                if (SET.swipe && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5 && dt < 800) { lastTap = 0; playCause = 'gesture:swipe'; (dx < 0 ? btnNext : btnPrev).click(); return; }
+                if (SET.dtap && Math.abs(dx) < 12 && Math.abs(dy) < 12 && dt < 300) { const n = Date.now(); if (n - lastTap < 350) { lastTap = 0; btnPlayPause.click(); } else lastTap = n; }
+            });
+            document.addEventListener('click', e => { if (SET.haptic && navigator.vibrate && e.target.closest('button,.playlist-item,.lib-row')) navigator.vibrate(10); }, true);
+            timeTotalEl.addEventListener('click', () => change('remain', !SET.remain));
+            // --- links to existing tools ---
+            $('set-refresh').onclick = () => { window.__openSettings(false); document.getElementById('btn-refresh-lib').click(); };
+            document.querySelector('#set-hub [data-lab]').onclick = () => { window.__openSettings(false); openLab(); };
+            $('ai-forget').onclick = () => { try { localStorage.removeItem('athana_aikey'); } catch (e) { } aiIn.value = ''; aiSync(); sync(); showToast('API key removed'); };
+            // --- backup, restore, clearing ---
+            const BK_KEYS = ['athana_set', 'athana_ui', 'athana_playlists', 'athana_edits', 'athana_stats', 'athana_covmap', 'athana_dsp', 'athana_sort', 'athana_vol', 'athana_romaji', 'athana_trans', 'athana_bp', 'athana_lite'];
+            const backupText = () => { const d = {}; BK_KEYS.concat(SET.bkKey ? ['athana_aikey'] : []).forEach(k => { try { const v = localStorage.getItem(k); if (v !== null) d[k] = v; } catch (e) { } }); return JSON.stringify({ app: 'Athana', format: 1, version: APP_VERSION, saved: new Date().toISOString(), data: d }); };
+            const copyText = async txt => { try { await navigator.clipboard.writeText(txt); return true; } catch (e) { try { const ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok; } catch (x) { return false; } } };
+            $('bk-file').onclick = () => {
+                const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([backupText()], { type: 'application/json' })); a.download = 'athana-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+                document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); showToast('Backup saved');
+            };
+            $('bk-copy').onclick = async () => showToast((await copyText(backupText())) ? 'Backup copied. Paste it somewhere safe.' : 'Could not copy the backup.');
+            function restore(txt) {
+                let j; try { j = JSON.parse(txt); } catch (e) { j = null; }
+                if (!j || j.app !== 'Athana' || !j.data || typeof j.data !== 'object') return showToast('That is not an Athana backup.');
+                let n = 0; BK_KEYS.concat(['athana_aikey']).forEach(k => { if (typeof j.data[k] === 'string') { try { localStorage.setItem(k, j.data[k]); n++; } catch (e) { } } });
+                showToast('Backup restored (' + n + ' items). Restarting…'); setTimeout(() => location.reload(), 900);
+            }
+            $('bk-load').onclick = () => $('bk-in').click();
+            $('bk-in').onchange = async e => { const f = e.target.files[0]; e.target.value = ''; if (f) restore(await f.text()); };
+            $('bk-paste').onclick = async () => { try { restore(await navigator.clipboard.readText()); } catch (e) { showToast('Could not read the clipboard. Allow access, or use From file.'); } };
+            async function storageInfo() {
+                try { const e = await navigator.storage.estimate(), mb = x => (x / 1048576).toFixed(1); $('bk-usage').textContent = 'Athana is using ' + mb(e.usage || 0) + ' MB' + (e.quota ? ' of about ' + Math.round(e.quota / 1048576) + ' MB available.' : '.'); }
+                catch (e) { $('bk-usage').textContent = 'Not available on this device.'; }
+            }
+            const rmKeys = pre => { const del = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (pre.some(p => k.startsWith(p))) del.push(k); } del.forEach(k => localStorage.removeItem(k)); return del.length; };
+            const dropDB = n => { try { indexedDB.deleteDatabase(n); } catch (e) { } };
+            function armed(btn, run) {
+                const sm = btn.querySelector('small');
+                if (btn.dataset.arm) { clearTimeout(+btn.dataset.arm); delete btn.dataset.arm; sm.textContent = btn.dataset.sub; run(); return; }
+                btn.dataset.sub = sm.textContent; sm.textContent = 'Tap again to confirm';
+                btn.dataset.arm = setTimeout(() => { sm.textContent = btn.dataset.sub; delete btn.dataset.arm; }, 4000);
+            }
+            $('dt-lyr').onclick = e => armed(e.currentTarget, () => { const n = rmKeys(['athana_lyr:', 'athana_tr3:', 'athana_tr4:']); showToast('Cleared ' + n + ' saved lyrics and translations'); });
+            $('dt-cov').onclick = e => armed(e.currentTarget, () => { rmKeys(['athana_covers', 'athana_covmap']); dropDB('athana_covers_db'); showToast('Saved covers cleared. Restarting…'); setTimeout(() => location.reload(), 900); });
+            $('dt-his').onclick = e => armed(e.currentTarget, () => { rmKeys(['athana_stats']); try { stats = {}; } catch (x) { } showToast('Play history cleared'); try { renderPlaylist(); } catch (x) { } });
+            $('dt-opt').onclick = e => armed(e.currentTarget, () => { Object.assign(SET, SET_DEF); setSave(); applySet(); sync(); trLangChanged(); showToast('Options reset'); });
+            $('dt-all').onclick = e => armed(e.currentTarget, () => { rmKeys(['athana_']); ['athana_covers_db', 'athana_wall_db', 'AthanaDB'].forEach(dropDB); try { sessionStorage.clear(); } catch (x) { } showToast('Everything erased. Restarting…'); setTimeout(() => location.reload(), 900); });
+            applySet();
+        })();
 
         // ===== Sort by song name =====
         const nameCmp = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }); // "Song 2" comes before "Song 10"
@@ -3162,7 +3758,12 @@
         }
 
         // --- Translation to Indonesian: Google Translate web endpoint, MyMemory as a backup ---
-        const TR_LANG = 'id';
+        let TR_LANG = SET.trLang; const TRN = () => TR_LANGS[TR_LANG] || TR_LANG;
+        function trLangChanged() {
+            TR_LANG = SET.trLang; const l = document.getElementById('trans-lbl'); if (l) l.textContent = TRN();
+            btnTrans.title = 'Translate the lyrics to ' + TRN() + ' (sent to Google Translate, or to your AI key if you saved one in Settings)';
+            if (lyr.data) { lyr.data.trState = undefined; lyr.data.lines.forEach(x => { delete x.tr; }); document.querySelectorAll('.lyr-tr').forEach(d => { d.textContent = ''; }); if (lyrTr) addTranslation(lyr.data); }
+        }
         const trHash = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
         const trNorm = s => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
         async function trGoogle(q) { // many lines in one request, source language detected automatically
@@ -3196,7 +3797,7 @@
         // --- Natural, casual Indonesian through an AI key (Claude / Gemini / OpenAI), saved only in this browser ---
         const aiKey = () => { try { return localStorage.getItem('athana_aikey') || ''; } catch (e) { return ''; } };
         const aiKind = k => /^sk-ant-/.test(k) ? 'claude' : /^AIza/.test(k) ? 'gemini' : /^sk-/.test(k) ? 'openai' : '';
-        const AI_SYS = `You translate song lyrics into relaxed, spoken Indonesian, as if the singer were talking to someone close. Think fan-subtitle style, not a textbook.
+        const AI_SYS_ID = `You translate song lyrics into relaxed, spoken Indonesian, as if the singer were talking to someone close. Think fan-subtitle style, not a textbook.
 - Never translate word by word. Say each line the way an Indonesian friend would actually say it.
 - Casual register: "aku" and "kamu" (never "saya", "Anda", "kami" for a couple), "nggak", "udah", "cuma", "banget", "gimana", "kayak", "biar", "pengen", "bisa" instead of "dapat". Drop formal prefixes in speech where it sounds natural ("lupain", "nunggu", "ngerasa", "lihat" instead of "melihat"), but keep it understandable and keep the lyrical feel.
 - Cut stiff filler like "adalah", "merupakan", "yaitu", "sebuah" whenever the line works without it. Prefer short, flowing lines.
@@ -3207,23 +3808,27 @@ Examples of the tone (stiff -> natural):
 "Apa yang saya lihat dari kereta adalah kenangan masa lalu" -> "Yang kulihat dari kereta cuma bayangan masa lalu"
 Keep names, ad-libs and vocables (la la la, oh oh) as they are. A line that is already Indonesian stays unchanged.
 Reply with ONLY a JSON array of strings: exactly one translation per input line, in the same order, nothing else.`;
+        const aiSys = () => TR_LANG === 'id' ? AI_SYS_ID : `You translate song lyrics into natural, spoken ${TRN()}, the way a native speaker would say each line. Never translate word by word. Keep the emotion and imagery, turn idioms into natural equivalents, keep names, ad-libs and vocables (la la la, oh oh) as they are. A line that is already in ${TRN()} stays unchanged.
+Reply with ONLY a JSON array of strings: exactly one translation per input line, in the same order, nothing else.`;
         let aiWarned = false;
         const aiFail = e => { if (aiWarned) return; aiWarned = true; showToast(/\b(400|401|403)\b/.test(String(e)) ? 'AI key was rejected. Using Google Translate instead.' : 'AI translation failed. Using Google Translate instead.'); };
         async function aiTranslate(texts, track) {
             const key = aiKey(), kind = aiKind(key), who = track ? [track.title, typeof artistOf === 'function' ? artistOf(track) : ''].filter(Boolean).join(' \u2014 ') : '';
-            const usr = (who ? 'Song: ' + who + '\n' : '') + 'Translate these ' + texts.length + ' lyric lines into Indonesian. Return ONLY a JSON array of ' + texts.length + ' strings.\n\n' + JSON.stringify(texts), J = { 'content-type': 'application/json' };
+            const usr = (who ? 'Song: ' + who + '\n' : '') + 'Translate these ' + texts.length + ' lyric lines into ' + TRN() + '. Return ONLY a JSON array of ' + texts.length + ' strings.\n\n' + JSON.stringify(texts), J = { 'content-type': 'application/json' };
             let r, pick;
-            if (kind === 'claude') { r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { ...J, 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: 'claude-sonnet-5-5', max_tokens: 4096, system: AI_SYS, messages: [{ role: 'user', content: usr }] }) }); pick = j => j.content[0].text; }
-            else if (kind === 'gemini') { r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key), { method: 'POST', headers: J, body: JSON.stringify({ systemInstruction: { parts: [{ text: AI_SYS }] }, contents: [{ role: 'user', parts: [{ text: usr }] }], generationConfig: { temperature: 0.8, responseMimeType: 'application/json' } }) }); pick = j => j.candidates[0].content.parts.map(p => p.text || '').join(''); }
-            else { r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { ...J, Authorization: 'Bearer ' + key }, body: JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.8, messages: [{ role: 'system', content: AI_SYS }, { role: 'user', content: usr }] }) }); pick = j => j.choices[0].message.content; }
+            if (kind === 'claude') { r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { ...J, 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: 'claude-sonnet-5-5', max_tokens: 4096, system: aiSys(), messages: [{ role: 'user', content: usr }] }) }); pick = j => j.content[0].text; }
+            else if (kind === 'gemini') { r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key), { method: 'POST', headers: J, body: JSON.stringify({ systemInstruction: { parts: [{ text: aiSys() }] }, contents: [{ role: 'user', parts: [{ text: usr }] }], generationConfig: { temperature: 0.8, responseMimeType: 'application/json' } }) }); pick = j => j.candidates[0].content.parts.map(p => p.text || '').join(''); }
+            else { r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { ...J, Authorization: 'Bearer ' + key }, body: JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.8, messages: [{ role: 'system', content: aiSys() }, { role: 'user', content: usr }] }) }); pick = j => j.choices[0].message.content; }
             if (!r.ok) throw new Error(kind + ' ' + r.status);
             const txt = pick(await r.json()), a = JSON.parse(txt.slice(txt.indexOf('['), txt.lastIndexOf(']') + 1));
             if (!Array.isArray(a) || a.length !== texts.length) throw new Error('shape');
             return a.map(x => String(x).replace(/\s*\n\s*/g, ' ').trim());
         }
         async function addTranslation(data) {
+            if (netBlocked('translate.googleapis.com')) { showToast('Translation is turned off in Settings \u2192 Privacy & online.'); data.trState = undefined; lyr.els.forEach(el => { if (el) el.querySelector('.lyr-tr').classList.remove('busy'); }); return; }
+            if (data.trLang !== TR_LANG) { data.lines.forEach(x => { delete x.tr; }); data.trState = undefined; data.trLang = TR_LANG; }
             if (data.trState) return; data.trState = 'busy'; const aiOn = !!aiKind(aiKey());
-            const track = lyr.track, key = track ? (aiKind(aiKey()) ? 'athana_tr4:' : 'athana_tr3:') + tKey(track) : null, hash = trHash(data.lines.map(l => l.text).join('\n'));
+            const track = lyr.track, key = track ? (aiKind(aiKey()) ? 'athana_tr4:' : 'athana_tr3:') + (TR_LANG === 'id' ? '' : TR_LANG + ':') + tKey(track) : null, hash = trHash(data.lines.map(l => l.text).join('\n'));
             const paint = i => { const el = lyr.data === data && lyr.els[i]; if (el) { const d = el.querySelector('.lyr-tr'); d.textContent = data.lines[i].tr || ''; d.classList.remove('busy'); } };
             const label = txt => { if (lyr.data === data) lyrBadge.textContent = (data.synced ? 'Synced lyrics' : 'Lyrics') + (txt ? ' · ' + txt : ''); };
             try { // translated before? reuse it
@@ -3237,7 +3842,7 @@ Reply with ONLY a JSON array of strings: exactly one translation per input line,
             const chunks = []; let cur = [], len = 0;
             todo.forEach(i => { const n = encodeURIComponent(data.lines[i].text).length + 3; if (cur.length && len + n > (aiKind(aiKey()) ? 9000 : 1400)) { chunks.push(cur); cur = []; len = 0; } cur.push(i); len += n; });
             if (cur.length) chunks.push(cur);
-            let done = 0, fails = 0; label('translating to Indonesian…');
+            let done = 0, fails = 0; label('translating to ' + TRN() + '…');
             for (let c = 0; c < chunks.length; c++) {
                 const ch = chunks[c];
                 if (lyr.data !== data || !lyrTr) { data.trState = undefined; label(''); return; } // left the song or switched it off: resume later
@@ -3245,17 +3850,17 @@ Reply with ONLY a JSON array of strings: exactly one translation per input line,
                 if (aiOn) { try { out = await aiTranslate(texts, track); viaAI = !!out; } catch (e) { aiFail(e); } }
                 if (!out) try {
                     const r = await trGoogle(texts.join('\n'));
-                    if (r.src === TR_LANG && c === 0) { todo.forEach(i => { data.lines[i].tr = ''; }); data.trState = 'done'; label(''); showToast('These lyrics are already in Indonesian.'); return; }
+                    if (r.src === TR_LANG && c === 0) { todo.forEach(i => { data.lines[i].tr = ''; }); data.trState = 'done'; label(''); showToast('These lyrics are already in ' + TRN() + '.'); return; }
                     const parts = r.text.split('\n').map(s => s.trim()); while (parts.length > texts.length && !parts[parts.length - 1]) parts.pop();
                     if (parts.length === texts.length) out = parts;
                 } catch (e) { }
                 if (!out) { out = []; for (const t of texts) { try { out.push(await trOne(t)); } catch (e) { out.push(null); } } } // lines were merged, or the first service failed: line by line
-                ch.forEach((i, k) => { const s = out[k]; if (s == null) { fails++; return; } const f = casualID(s, viaAI); data.lines[i].tr = trNorm(f) === trNorm(texts[k]) ? '' : f; done++; paint(i); });
+                ch.forEach((i, k) => { const s = out[k]; if (s == null) { fails++; return; } const f = TR_LANG === 'id' ? casualID(s, viaAI) : s; data.lines[i].tr = trNorm(f) === trNorm(texts[k]) ? '' : f; done++; paint(i); });
                 if (!done) break; // nothing came back at all (offline?) - stop early
             }
             if (!done && fails) { data.trState = undefined; label(''); showToast('Could not reach the translation service. Translation needs internet.'); return; }
             data.trState = fails ? undefined : 'done'; label('');
-            if (fails) showToast(fails + ' line' + (fails > 1 ? 's' : '') + ' could not be translated. Turn Indonesia off and on to retry.');
+            if (fails) showToast(fails + ' line' + (fails > 1 ? 's' : '') + ' could not be translated. Turn translation off and on to retry.');
             else try { if (key) localStorage.setItem(key, JSON.stringify({ h: hash, tr: data.lines.map(l => l.tr || '') })); } catch (e) { }
         }
 
@@ -3331,7 +3936,7 @@ Reply with ONLY a JSON array of strings: exactly one translation per input line,
             btnTrans.classList.toggle('on', lyrTr); lyrLines.classList.toggle('no-tr', !lyrTr);
             if (lyrTr && lyr.data) {
                 let seen = null; try { seen = localStorage.getItem('athana_trans_note'); localStorage.setItem('athana_trans_note', '1'); } catch (e) { }
-                if (!seen) showToast('Translating to Indonesian: the lyric lines are sent to Google Translate.');
+                if (!seen) showToast('Translating to ' + TRN() + ': the lyric lines are sent to Google Translate.');
                 lyr.els.forEach((el, i) => { if (el && lyr.data.lines[i].tr === undefined) el.querySelector('.lyr-tr').classList.add('busy'); });
                 addTranslation(lyr.data);
             }
