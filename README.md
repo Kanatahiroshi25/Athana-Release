@@ -35,7 +35,7 @@
 | **Web** | Open the [web app](https://kanatahiroshi25.github.io/Athana-Release/) in Chrome or Edge. Nothing to install. |
 
 
-SCREENSHOTS: add three phone screenshots to the docs folder, then delete the first and last line of this comment (the lines with the arrows) so the table shows.
+SCREENSHOTS:
 
 | Library | Now playing | Lyrics |
 | :---: | :---: | :---: |
