@@ -12,6 +12,7 @@
 **[🌐 Open the web app](https://kanatahiroshi25.github.io/Athana-Release/)** &nbsp;·&nbsp;
 **[✨ Features](#features)** &nbsp;·&nbsp;
 **[🔒 Privacy](#privacy)**
+📜 Changelogs: [Android app](CHANGELOG-ANDROID.md) · [Web app](CHANGELOG.md)
 
 </div>
 
