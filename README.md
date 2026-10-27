@@ -34,13 +34,13 @@
 | **Android** | Download the `.apk` from the [latest release](https://github.com/Kanatahiroshi25/Athana-Release/releases/latest), open it, and allow installs from your browser if Android asks. After that the app tells you when an update is ready. |
 | **Web** | Open the [web app](https://kanatahiroshi25.github.io/Athana-Release/) in Chrome or Edge. Nothing to install. |
 
-<!--
+
 SCREENSHOTS: add three phone screenshots to the docs folder, then delete the first and last line of this comment (the lines with the arrows) so the table shows.
 
 | Library | Now playing | Lyrics |
 | :---: | :---: | :---: |
 | <img src="docs/screenshot-library.png" width="250"> | <img src="docs/screenshot-playing.png" width="250"> | <img src="docs/screenshot-lyrics.png" width="250"> |
--->
+
 
 ## Features
 
