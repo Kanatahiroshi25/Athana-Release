@@ -6,12 +6,11 @@
 [![Latest release](https://img.shields.io/github/v/release/Kanatahiroshi25/Athana-Release?style=for-the-badge&color=46E6B0&labelColor=100E22&label=release)](https://github.com/Kanatahiroshi25/Athana-Release/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/Kanatahiroshi25/Athana-Release/total?style=for-the-badge&color=A57CFF&labelColor=100E22)](https://github.com/Kanatahiroshi25/Athana-Release/releases)
 [![Platform](https://img.shields.io/badge/platform-Android%20%C2%B7%20Web-5FB8FF?style=for-the-badge&labelColor=100E22)](#download)
-[![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge&labelColor=100E22)](LICENSE)
-
+[![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge&labelColor=100E22)](LICENSE.md)
 **[⬇️ Download for Android](https://github.com/Kanatahiroshi25/Athana-Release/releases/latest)** &nbsp;·&nbsp;
 **[🌐 Open the web app](https://kanatahiroshi25.github.io/Athana-Release/)** &nbsp;·&nbsp;
 **[✨ Features](#features)** &nbsp;·&nbsp;
-**[🔒 Privacy](#privacy)**
+**[🔒 Privacy](#privacy)** &nbsp;·&nbsp;
 **📜 Changelogs: [Android app](CHANGELOG-ANDROID.md) · [Web app](CHANGELOG.md)**
 
 </div>
