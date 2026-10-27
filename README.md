@@ -1,6 +1,6 @@
 <div align="center">
 
-https://raw.githubusercontent.com/Kanatahiroshi25/Athana-Release/main/docs/banner.png
+<img src="https://raw.githubusercontent.com/Kanatahiroshi25/Athana-Release/main/docs/banner.png" alt="Athana Melody: lossless music player with word-by-word synced lyrics" width="100%">
 <br>
 
 [![Latest release](https://img.shields.io/github/v/release/Kanatahiroshi25/Athana-Release?style=for-the-badge&color=46E6B0&labelColor=100E22&label=release)](https://github.com/Kanatahiroshi25/Athana-Release/releases/latest)
