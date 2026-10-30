@@ -2,6 +2,18 @@
 
 The newest version is first. The changelog for the web app is in [CHANGELOG.md](CHANGELOG.md).
 
+## 2.1.2
+
+**Athana's own audio engine, and lyrics that stay with you**
+
+- **Athana FLAC decoder (beta):** FLAC songs can be decoded by Athana's own code, sample for sample, instead of Android's. Switch it on in Settings → Sound & effects. The Signal path shows which one is playing.
+- **Athana audio output (beta):** 24 and 32-bit songs are sent to your phone at their full bit depth, straight from Athana, instead of being lowered to 16-bit first. The equalizer, mixer and loudness normalisation work inside it. Tempo still uses the standard output, which takes over by itself.
+- **Bit-perfect USB output (beta, Android 14 or later):** for a USB DAC or amp. Athana asks Android to skip its mixer, so the song reaches the DAC at its own sample rate with no resampling. It only works when the DAC offers the song's format. Nothing changes on the speaker or Bluetooth.
+- **Romaji with no internet:** Korean lines and Japanese lines without kanji are read by Athana itself. Lines with kanji still use the online service. Korean lyrics get romaji for the first time.
+- **Back up and restore your lyrics:** saved lyrics, translations and romaji go into one file (Settings → Music library), so a reinstall no longer loses them.
+- **Drive songs that would not start now play:** if Drive cannot stream a song, Athana copies it first and plays the copy. The error message also says what to do.
+- The header on the Library and Playing screens now says Athana Melody.
+
 ## 2.1.1
 
 **Google Drive, offline copies and Apple Music-style lyrics**
@@ -12,7 +24,6 @@ The newest version is first. The changelog for the web app is in [CHANGELOG.md](
 - **Load your own lyrics:** ⋮ → Load a .lrc file…, or paste them with Paste or edit lyrics. Word stamps like `<00:12.40>` are kept.
 - **Google Drive:** choose Add from Google Drive, open your folder and use Select all. Athana remembers the folder and opens it there next time. Android does not let apps open a Drive folder directly, so songs are picked from the list.
 - **Offline copies:** choose Songs I play, Save all or Don't save, set a storage limit, and optionally save over Wi-Fi only. Copies download slowly in the background, with a notification you can pause, and the songs played longest ago are removed first (Settings → Music library).
-- **Drive songs that would not start now play:** if Drive cannot stream a song, Athana copies it first and plays the copy. The error message also says what to do.
 - The notification and lock screen now show the **cover, title and artist** for Drive songs too.
 - **Linked folders come back by themselves:** songs that returned or were added appear a few seconds after the app opens (Settings → Music library → Refresh when Athana opens).
 - A fuller **About** page, with the developer's GitHub profile and the sources of the lyrics.
