@@ -1,17 +1,18 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/Kanatahiroshi25/Athana-Release/main/docs/banner.png" alt="Athana Melody: lossless music player with word-by-word synced lyrics" width="100%">
+<img src="docs/banner.png" alt="Athana Melody: lossless music player with word-by-word synced lyrics" width="100%">
+
 <br>
 
 [![Latest release](https://img.shields.io/github/v/release/Kanatahiroshi25/Athana-Release?style=for-the-badge&color=46E6B0&labelColor=100E22&label=release)](https://github.com/Kanatahiroshi25/Athana-Release/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/Kanatahiroshi25/Athana-Release/total?style=for-the-badge&color=A57CFF&labelColor=100E22)](https://github.com/Kanatahiroshi25/Athana-Release/releases)
 [![Platform](https://img.shields.io/badge/platform-Android%20%C2%B7%20Web-5FB8FF?style=for-the-badge&labelColor=100E22)](#download)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge&labelColor=100E22)](LICENSE.md)
+
 **[⬇️ Download for Android](https://github.com/Kanatahiroshi25/Athana-Release/releases/latest)** &nbsp;·&nbsp;
 **[🌐 Open the web app](https://kanatahiroshi25.github.io/Athana-Release/)** &nbsp;·&nbsp;
 **[✨ Features](#features)** &nbsp;·&nbsp;
-**[🔒 Privacy](#privacy)** &nbsp;·&nbsp;
-**📜 Changelogs: [Android app](CHANGELOG-ANDROID.md) · [Web app](CHANGELOG.md)**
+**[🔒 Privacy](#privacy)**
 
 </div>
 
@@ -34,13 +35,13 @@
 | **Android** | Download the `.apk` from the [latest release](https://github.com/Kanatahiroshi25/Athana-Release/releases/latest), open it, and allow installs from your browser if Android asks. After that the app tells you when an update is ready. |
 | **Web** | Open the [web app](https://kanatahiroshi25.github.io/Athana-Release/) in Chrome or Edge. Nothing to install. |
 
-
-SCREENSHOTS:
+<!--
+SCREENSHOTS: add three phone screenshots to the docs folder, then delete the first and last line of this comment (the lines with the arrows) so the table shows.
 
 | Library | Now playing | Lyrics |
 | :---: | :---: | :---: |
 | <img src="docs/screenshot-library.png" width="250"> | <img src="docs/screenshot-playing.png" width="250"> | <img src="docs/screenshot-lyrics.png" width="250"> |
-
+-->
 
 ## Features
 
@@ -49,10 +50,13 @@ SCREENSHOTS:
 - Word-by-word fill on the line being sung, with smooth scrolling
 - Romaji and translation under each line
 - Finds lyrics online (LRCLIB, NetEase Cloud Music), reads lyrics inside your files, or loads your own `.lrc`
+- Romaji for Japanese and Korean, and Korean plus kana-only Japanese lines work with no internet
+- Back up and restore your saved lyrics in one file
 - Words that have no timing yet are timed from the line, so every synced song fills in word by word
 
 ### 🎧 Sound
 - Plays FLAC, WAV, AIFF, MP3, AAC, OGG and Opus
+- Athana's own FLAC decoder and audio output *(beta)*: 24-bit songs reach your phone at 24-bit, and a USB DAC can get them bit-perfect on Android 14 and later
 - 10-band equalizer with a preamp, presets and a Strength slider
 - Mixer: balance, stereo expand, tempo, mono, volume trim and crossfeed for headphones
 - Loudness normalisation, so every song is about the same volume
@@ -96,7 +100,7 @@ Everything else (your library, playlists, covers and options) stays on your devi
 ## Built with
 
 - [Flutter](https://flutter.dev) for the Android app
-- [Media3 ExoPlayer](https://developer.android.com/media/media3/exoplayer) for playback
+- [Media3 ExoPlayer](https://developer.android.com/media/media3/exoplayer) for playback, with Athana's own FLAC decoder and audio output on top
 - Plain HTML and JavaScript for the web app
 
 ## Credits
@@ -105,7 +109,7 @@ Lyrics are provided by [LRCLIB](https://lrclib.net) and NetEase Cloud Music, and
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [MIT License](LICENSE.md).
 
 <div align="center">
 
