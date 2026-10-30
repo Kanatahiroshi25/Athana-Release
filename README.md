@@ -92,6 +92,7 @@ Athana Melody has no account and no tracking. It only goes online when you ask i
 | --- | --- | --- |
 | Lyrics search | Looks songs up on LRCLIB and NetEase Cloud Music | Yes |
 | Translation | Sends the lyric text to Google Translate | Yes |
+| Romaji for lines with kanji | Sends those lines to Google Translate. Korean and kana-only Japanese lines are read on your phone and never leave it | Yes |
 | Google Drive songs | Reads the songs you picked, through Android | Only used if you add Drive songs |
 | Update check | Asks GitHub once a day for the latest release | Yes |
 
