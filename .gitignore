@@ -1,0 +1,36 @@
+# --- SECRETS: never upload these ---
+android/key.properties
+android/local.properties
+*.jks
+*.keystore
+*.pem
+*.p12
+.env
+google-services.json
+
+# --- Flutter / Dart build output ---
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+
+# --- Android / Gradle ---
+android/.gradle/
+android/captures/
+android/app/debug/
+android/app/profile/
+android/app/release/
+*.apk
+*.aab
+*.iml
+.idea/
+.gradle/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+*.log
